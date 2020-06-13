@@ -1,52 +1,52 @@
 const {
     app,
+    electron,
     BrowserWindow,
     ipcMain
-} = require('electron')
+} = require('electron');
 
-const electron = require('electron')
-
-let win
+let win;
 
 function createWindow() {
+    const _width = 1200;
+    const _height = 800;
 
-    const _width = 1200, _height = 800
     win = new BrowserWindow({
         width: _width,
         height: _height,
         minWidth: 800,
         minHeight: 600,
         icon: './assets/img/icon.png'
-    })
+    });
+
+    win.webContents.openDevTools();
 
     try {
         const screenSize = electron.screen.getPrimaryDisplay().size;
-        win.setPosition((screenSize.width - _width) / 2,
-            (screenSize.height - _height) / 2)
+        win.setPosition( (screenSize.width - _width) / 2, (screenSize.height - _height) / 2);
     }
-    catch (er) {
-        win.center()
+    catch(error) {
+        win.center();
     }
 
-    win.setMenu(null)
+    win.setMenu(null);
 
-    win.loadURL(`file://${__dirname}/bundle/index.html`)
+    win.loadURL(`file://${__dirname}/dist/index.html`);
 
     win.on("closed", () => {
         win = null;
     });
-
 }
 
-app.on("ready", createWindow)
+app.on("ready", createWindow);
 
 app.on("window-all-closed", () => {
-    app.quit()
-})
+    app.quit();
+});
 
 app.on("activate", () => {
 
-    if (win === null)
-        createWindow()
-
-})
+    if (win === null) {
+        createWindow();
+    }
+});
