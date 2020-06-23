@@ -8,3 +8,6 @@ bundle/**/**/*.js
 bundle/**/*.js
 bundle/*.js
 
+
+#Electron-builder output
+/dist_electron

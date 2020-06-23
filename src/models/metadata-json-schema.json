@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "default": {
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "properties": {
+        "authors": {
+            "items": {
+                "$ref": "#/definitions/default"
+            },
+            "type": "array"
+        },
+        "description": {
+            "type": "string"
+        },
+        "pagesTotal": {
+            "type": "number"
+        },
+        "publicationYear": {
+            "type": "number"
+        },
+        "title": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}

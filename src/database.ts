@@ -1,18 +1,18 @@
 import Datastore from 'nedb';
 
-import Book from './models/book';
-import BookList from './models/book-list';
+import Document from './models/document';
+import DocumentList from './models/document-list';
 import UserDataFolder from './user-data-folder';
 
 export default class Database {
     private static _instance: Database;
 
-    public books: Datastore<Book>;
-    public bookList: Datastore<BookList>;
+    public documents: Datastore<Document>;
+    public documentLists: Datastore<DocumentList>;
 
     constructor() {
-        this.books = new Datastore<Book>(); // new Datastore({ filename: `${UserDataFolder.path}/dbs/books.db`, autoload: true });
-        this.bookList = new Datastore<BookList>();
+        this.documents = new Datastore({ filename: `${UserDataFolder.path}/dbs/documents.db`, autoload: true });
+        this.documentLists = new Datastore({ filename: `${UserDataFolder.path}/dbs/documentLists.db`, autoload: true });
     }
 
     public static instance(): Database {

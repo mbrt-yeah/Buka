@@ -1,16 +1,20 @@
 {
     "compilerOptions": {
+        "resolveJsonModule": true,
         "target": "esnext",
         "module": "esnext",
         "strict": true,
+        "strictPropertyInitialization": false,
         "jsx": "preserve",
         "importHelpers": true,
         "moduleResolution": "node",
         "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "sourceMap": true,
         "baseUrl": ".",
+        "typeRoots": [],
         "types": [
             "dropzone",
             "node",

@@ -1,11 +1,11 @@
-import FULLTEXT_TYPE from '../constants/fulltext-type';
-import FilePath from './file-path';
+import { f } from '@marcj/marshal';
+import FULLTEXT_TYPE from '@/constants/fulltext-type';
 
 export default class Fulltext {
-    public type: FULLTEXT_TYPE;
-    public filePath: FilePath;
+    @f.enum(FULLTEXT_TYPE) public type: FULLTEXT_TYPE;
+    @f public filePath: string;
 
-    public constructor(type: FULLTEXT_TYPE, filePath: FilePath) {
+    public constructor(type: FULLTEXT_TYPE, filePath: string) {
         this.type = type;
         this.filePath = filePath;
     }

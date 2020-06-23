@@ -1,9 +1,11 @@
-import FacetValue from './facet-value';
+import { f } from '@marcj/marshal';
+
+import FacetValue from '@/models/facet-value';
 
 export default class Facet {
-    public name: string;
-    public type: string;
-    public values: FacetValue[];
+    @f public name: string;
+    @f public type: string;
+    @f.array(FacetValue) public values: FacetValue[];
 
     public constructor() {
         this.name = '';

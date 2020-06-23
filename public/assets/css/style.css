@@ -3,9 +3,19 @@
     src: url(../font/OpenSans-Regular.ttf) format("truetype");
 }
 
+@font-face {
+    font-family: 'iconmonstr-buka';
+    src: url(../font/iconmonstr-buka/iconmonstr-buka.ttf) format("truetype");
+}
+
 [v-cloak] {
     display: none;
 }
+
+
+/**
+ * General Globals and Resets
+ */
 
 html,
 body {
@@ -13,11 +23,9 @@ body {
     color: #cccccc;
     font-family: 'Open Sans';
     font-size: 16px;
-    height: 100%;
     margin: 0;
     padding:0;
     user-select: none;
-    width: 100%;
 }
 
 body * {
@@ -30,12 +38,59 @@ h1, h2, h3, h4, h5 {
     padding: 0;
 }
 
+p, form {
+    margin: 0;
+}
+
+
+/**
+ *
+ */
+
+input[type=text],
+select {
+    background-color: #333333;
+    border: 0;
+    border-bottom: 1px solid #3b3c6a;
+    color: #ccc;
+    padding: 6px 3px;
+    padding: 0.375rem 0.1875rem;
+}
+
+input[type=text] {
+    width: 100%;
+}
+
+input[type=text]:focus {
+    background-color: #3b3c6a;
+}
+
+
+/**
+ * Scrollbars
+ */
+
+*::-webkit-scrollbar {
+    width: 6px;
+    width: 0.375rem;
+}
+*::-webkit-scrollbar-track {
+    /*-webkit-box-shadow: inset 0 0 6px #000000;*/
+    background-color: #1b1b1b;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: #444444;
+    outline: 0px;
+}
+
+
+/**
+ * Buttons
+ */
+
 .button {
     background-color: #4169e1;
-    color: white;
-    border-radius: 6px;
-    border-radius: 0.375rem;
-    border: 0px;
+    color: #cccccc;
     margin: 0;
     padding: 6px 12px;
     padding: 0.375rem 0.75rem;
@@ -45,292 +100,87 @@ h1, h2, h3, h4, h5 {
     font-size: small;
 }
 
+.button-x-small {
+    font-size: x-small;
+}
+
+.button-icon-only {
+    width: 48px;
+    width: 3rem;
+}
+
+.button-icon-only .text {
+    left: -9999px;
+    position: absolute;
+}
+
 .button-outline-only {
-    background-color: #4169e15c;
-    border: 2px solid #4169e1;
+    background-color: transparent;
 }
 
 .button-text {
     background-color: transparent;
-}
-
-.tabs {
-    display: block;
-    list-style-type: none;
-    margin: 0;
     padding: 0;
-    position: relative;
-    text-align: left;
+}
+
+.button-text.active,
+.button-text:hover {
+    color: #4169e1;
+}
+
+.button-positive {
+    background-color: #43cc60;
+}
+
+.button-negative {
+    background-color: #ff5555;
+}
+
+.button-text.button-negative {
+    background-color: transparent;
+    color: #ff5555;
+}
+
+.button-text.button-positive {
+    background-color: transparent;
+    color: #43cc60;
 }
 
 
 /**
- * Tabs
- */ 
-
-.tabs > .tab {
-    display: inline-block;
-    text-align: center;
-    width: 50%;
-}
-
-.tabs > .tab > input[type="radio"] {
-    position: absolute;
-    top: 0;
-    left: -9999px;
-}
-
-.tabs > .tab > label {
-    cursor: pointer;
-    display: block;
-    font-size: small;
-    font-weight: normal;
-    margin: 0;
-    position: relative;
-}
-
-.tabs > .tab > label:hover {}
-
-.tabs > .tab > .tab-content {
-    display: none; 
-    left: 0;
-    margin-top: 24px;
-    margin-top: 1.5rem;
-    overflow: hidden;
-    position: absolute;
-    text-align: left;
-    width: 100%;
-    z-index: 2;
-}
-
-.tabs > .tab > [id^="tab"] + label {
-    padding: 12px 0;
-    padding: 0.75rem 0;
-}
-
-.tabs > .tab > [id^="tab"]:checked + label {
-    background-color: #1b1b1b; 
-    font-weight: bold;
-}
-
-.tabs > .tab > [id^="tab"]:checked ~ [id^="tab-content"] {
-    display: block;
-}
-
-
-/**
- * App Component
+ * Icons
  */
 
-.app-component {}
-
-.app-component > .main-content-wrapper {
-    display: flex;
+.iconmonstr {
+    font-family: 'iconmonstr-buka';
 }
 
-.app-component > .main-content-wrapper {
-    display: flex;
+.iconmonstr-buka-grid:before {
+    content: "\e900";
 }
 
-.app-component > .main-content-wrapper .content-components-wrapper {
-    flex-shrink: 1;
-    flex-grow: 1;
-    padding: 24px;
-    padding: 1.5rem;
-    width: 100%;
+.iconmonstr-buka-list:before {
+    content: "\e901";
 }
 
-
-/**
- * Topbar Component
- */
-
-.topbar-component {
-    align-items: center;
-    background: #333333;
-    display: flex;
-    height: 48px;
-    height: 3rem;
-    padding: 0 12px;
-    padding: 0 0.75rem;
+.iconmonstr-buka-pencil:before {
+    content: "\e902";
 }
 
-
-/**
- * Searchbox Component
- */
-
-.search-box-component {
-    margin-right: auto;
-    margin-left: auto;
+.iconmonstr-buka-plus:before {
+    content: "\e906";
 }
 
-.search-box {
-    background: #1b1b1b url(../img/search.png) no-repeat 192px center;
-    border-radius: 6px;
-    border-radius: 0.375rem;
-    border: 0;
-    color: #eeeeee;
-    padding: 6px 12px;
-    padding: 0.375rem 0.75rem;
-    width: 192px;
-    width: 12rem;
+.iconmonstr-buka-save:before {
+    content: "\e903";
 }
 
-.search-box:hover,
-.search-box:focus {
-    background-color: #1e1e1e;
+.iconmonstr-buka-trash-can:before {
+    content: "\e904";
 }
 
-
-/**
- * Sidebar Component
- */
-
-.sidebar-component {
-    border-right: 1px solid #1b1b1b;
-    flex-shrink: 0;
-    flex-grow: 0;
-    height: 640px;
-    height: 40rem;
-    padding: 0;
-    position: relative;
-    width: 240px;
-    width: 15rem;
-}
-
-.sidebar-component .tabs > .tab > .tab-content {
-    left: 12px !important;
-    width: 228px !important;
-}
-
-/* Sidebar Facet & List Component */
-
-.sidebar-facet-component,
-.sidebar-list-component {
-    margin: 0 0 24px 0;
-    margin: 0 0 1.5rem 0;
-}
-
-.facet-title,
-.list-title {
-    margin-bottom: 12px;
-    margin-bottom: 0.75rem;
-}
-
-.facet-title .text,
-.list-title .text {
-    font-size: small;
-    font-weight: 600;
-}
-
-.list-title .text {
-    margin-right: 12px;
-    margin-right: 0.75rem;
-}
-
-.facet-values-list,
-.list-values-list {
-    list-style-type: none;
-    margin: 0;
-    padding: 0 0 0 6px;
-    padding: 0 0 0 0.375rem;
-}
-
-.facet-values-list .facet-value,
-.list-values-list .list-value {
-    margin-bottom: 12px;
-    margin-bottom: 0.75rem;
-}
-
-.facet-values-list .facet-value:last-child,
-.list-values-list .list-value:last-child {
-    margin-bottom: 0;
-}
-
-.facet-value .text,
-.list-value .text {
-    font-size: small;
-    margin-right: 12px;
-    margin-right: 0.75rem;
-}
-
-.list-options {
-    border-top: 1px solid #1b1b1b;
-    margin: 24px 12px 0 0;
-    margin: 1.5rem 0.75rem 0 0;
-    padding-top: 12px;
-    padding-top: 0.75rem;
-}
-
-
-/**
- * Booklist Component
- */
-
-.book-list-component {
-    display: flex;
-    flex-direction: column;
-}
-
-.book-list-component .book-list-options {
-    margin-bottom: 24px;
-    margin-bottom: 1.5rem;
-    text-align: right;
-}
-
-.book-list-component .book-list-options #add-new-books-button {
-    margin-right: 12px;
-    margin-right: 0.75rem;
-} 
-
-.book-list-component .book-list-wrapper {
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.book-list-component .book-list {
-    display: flex;
-    flex-wrap: wrap;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: auto;
-}
-
-.book-list-component .book-list .book {
-    background-color: #333333;
-    border-radius: 6px;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    margin: 0 24px 24px 0 ;
-    margin: 0 1.5rem 1.5rem 0;
-    padding: 12px;
-    padding: 0.75rem;
-}
-
-.book-list-component .book-list .book:last-child {
-    margin-right: 0;
-}
-
-.book-list-component .book-list .book:hover {
-    background-color: #1b1b1b;
-}
-
-.book-list-component .book-list .book img {
-    margin-bottom: 6px;
-    margin-bottom: 0.375rem;
-    width: 160px;
-    width: 10rem;
-}
-
-.book-list-component .book-list .book .book-title {
-    display: flex;
-    font-size: smaller;
-    justify-content: center;
+.iconmonstr-buka-x-mark:before {
+    content: "\e905";
 }
 
 
@@ -338,7 +188,7 @@ h1, h2, h3, h4, h5 {
  * Label Component
  */
 
-.label-component {
+ .label-component {
     background-color: #1b1b1b;
     border-radius: 3px;
     border-radius: 0.1875rem;
@@ -424,6 +274,516 @@ h1, h2, h3, h4, h5 {
     color: #4169e1;
     font-style: normal;
 }
+
+
+/**
+ * Vue Notifications Component
+ */
+
+.vue-notification-group {
+    bottom: 48px !important;
+    bottom: 3rem !important;
+}
+
+.vue-notification {
+    background: #4169e1 !important;
+    border-left: 6px solid #3b3c6a !important;
+    color: #ffffff !important;
+    font-size: small !important;
+    margin: 0 0 12px 0 !important;
+    margin: 0 0 0.75rem 0 !important;
+    padding: 12px !important;
+    padding: 0.75rem !important;
+}
+
+.vue-notification.success {
+    background-color: #43cc60 !important;
+    border-left-color: #287b3a !important;
+}
+
+/**
+ * Editable Text Field Component
+ */
+
+.editable-textfield-component {
+    display: flex;
+    flex-direction: column;
+}
+
+.editable-textfield-component .label {
+    align-self: flex-start;
+    display: flex;
+    font-weight: bold;
+    margin-bottom: 12px; 
+    margin-bottom: 0,75rem;
+    white-space: pre-wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.editable-textfield-component .textfield {
+    width: 100%;
+}
+
+.editable-textfield-component .displayed-value {
+    margin: 0;
+}
+
+.editable-textfield-component.buka {
+    border-bottom: 1px solid #1b1b1b;
+    font-size: small;
+    padding: 12px 0;
+    padding: 0.75rem 0;
+}
+
+
+/**
+ * Author Metadata Component
+ */
+
+.authors-metadata-component.buka {
+    align-items: flex-start;
+    border-bottom: 1px solid #1b1b1b;
+    display: flex;
+    flex-direction: column;
+    font-size: small;
+    padding: 12px 0;
+    padding: 0.75rem 0;
+}
+
+.authors-metadata-component .label {
+    align-self: flex-start;
+    display: flex;
+    font-weight: bold;
+    margin-bottom: 12px; 
+    margin-bottom: 0.75rem;
+    white-space: pre-wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.authors-metadata-component .authors {
+    list-style-type: none;
+    margin: 0 0 12px 0;
+    margin: 0 0 0.75rem 0;
+    padding: 0;
+}
+
+.authors-metadata-component .authors .author {
+    display: flex;
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+}
+
+.authors-metadata-component .authors .author:last-child {
+    margin-bottom: 0;
+}
+
+.authors-metadata-component .authors .author .editable-textfield-component {
+    border: 0;
+    margin: 0 3px 0 0;
+    padding: 0;
+}
+
+.authors-metadata-component .add-new-author-button {
+    margin-top: 12px;
+    margin-top: 0.75rem;
+}
+
+
+/**
+ * Topbar Component
+ */
+
+.topbar-component {
+    align-items: center;
+    background: #333333;
+    display: flex;
+    height: 48px;
+    height: 3rem;
+    padding: 0 12px;
+    padding: 0 0.75rem;
+}
+
+
+/**
+ * Searchbox Component
+ */
+
+.search-box-component {
+    margin: 0 auto;
+}
+
+.search-box {
+    background: #1b1b1b url(../img/search.png) no-repeat 192px center !important;
+    border: 0 !important;
+    color: #eeeeee;
+    padding: 6px 12px;
+    padding: 0.375rem 0.75rem;
+    width: 192px;
+    width: 12rem;
+}
+
+.search-box:hover,
+.search-box:focus {
+    background-color: #1e1e1e;
+}
+
+
+/**
+ * Sidebar Component
+ */
+
+.sidebar-component {
+    background-color: #444444;
+    flex-shrink: 0;
+    flex-grow: 0;
+    padding: 0;
+}
+
+.sidebar-component > .tabs {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-component > .tabs > .tab {}
+
+.sidebar-component > .tabs > .tab > a {
+    color: inherit;
+    display: flex;
+    font-size: x-small;
+    justify-content: center;
+    padding: 12px 0;
+    padding: 0.75rem 0;
+    text-align: center;
+    text-decoration: none;
+    width: 80px;
+    width: 5rem;
+}
+
+.sidebar-component > .tabs > .tab > a.router-link-active {
+    background-color: #4169e15c;
+    color: #ffffff;
+}
+
+
+/**
+ * Document Shelf Component
+ */
+
+.document-shelf-component {
+    display: flex;
+    width: 100%;
+}
+
+.document-shelf-component .document-shelf-wrapper {
+    border-right: 1px solid #1b1b1b;
+    display: flex;
+    flex-direction: column;
+    padding-right: 24px;
+    padding-right: 1.5rem;
+    width: 100%;
+}
+
+.document-shelf-component .document-shelf-options {
+    align-items: center;
+    display: flex;
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.document-shelf-component .document-shelf-options .sort-options,
+.document-shelf-component .document-shelf-options .display-options {
+    align-items: center;
+    display: flex;
+    width: 50%;
+}
+
+.document-shelf-component .document-shelf-options .sort-options {
+    font-size: small;
+    justify-content: flex-start;
+}
+
+.document-shelf-component .document-shelf-options .sort-options .label {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.document-shelf-component .document-shelf-options .display-options {
+    justify-content: flex-end;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.document-shelf-component .document-shelf-options .display-options .display-option {
+    display: inline-block;
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.document-shelf-component .document-shelf-options .display-options .display-option:hover {
+    cursor: pointer;
+}
+
+.document-shelf-component .document-shelf-options .display-options .display-option:last-child {
+    margin-right: 0;
+}
+
+.document-shelf-component .document-shelf {
+    height: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0 24px 0 0;
+    padding: 0 1.5rem 0 0;
+    overflow-y: scroll;
+}
+
+.document-shelf-component .document-shelf .document {
+    background-color: #333333;
+    cursor: pointer;
+    padding: 12px;
+    padding: 0.75rem;
+}
+
+.document-shelf-component .document-shelf.grid .document {
+    display: inline-block;
+    margin: 0 24px 24px 0 ;
+    margin: 0 1.5rem 1.5rem 0;
+    max-width: 160px;
+    max-width: 10rem;
+}
+
+.document-shelf-component .document-shelf.list .document {
+    display: flex;
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+}
+
+.document-shelf-component .document-shelf.grid .document:last-child {
+    margin-right: 0;
+}
+
+.document-shelf-component .document-shelf.list .document:last-child {
+    margin-bottom: 0;
+}
+
+.document-shelf-component .document-shelf .document.selected,
+.document-shelf-component .document-shelf .document:hover {
+    background-color: #3b3c6a;
+}
+
+.document-shelf-component .document-shelf.grid .document img {
+    margin-bottom: 6px;
+    margin-bottom: 0.375rem;
+    width: 100%;
+}
+
+.document-shelf-component .document-shelf.list .document img {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+    height: 160px;
+    height: 10rem;
+}
+
+.document-shelf-component .document-shelf .document .metadata {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.document-shelf-component .document-shelf.grid .document .metadata .title {
+    display: flex;
+    font-size: smaller;
+    justify-content: center;
+    text-align: center;
+}
+
+.document-shelf-component .document-shelf.list .document .metadata .title {
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+}
+
+.document-shelf-component .document-shelf.grid .document .metadata .description {
+    display: none;
+}
+
+.document-shelf-component .document-shelf.list .document .metadata .description {
+    font-size: small;
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+}
+
+.document-shelf-component .document-shelf .document .metadata .authors .authors-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.document-shelf-component .document-shelf .document .metadata .authors .authors-list .author {
+    display: inline-block;
+}
+
+.document-shelf-component .document-shelf.grid .document .metadata .authors {
+    display: none;
+}
+
+.document-shelf-component .document-shelf.list .document .metadata .authors {
+    font-size: small;
+}
+
+
+/**
+ * Document Preview Component
+ */
+
+.document-preview-component {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    flex-grow: 0;
+    height: 100%;
+    overflow-y: scroll;
+    width: 320px;
+    width: 20rem;
+    padding: 0 24px 24px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.document-preview-component .options {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.document-preview-component .options .option {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.document-preview-component .options .option:last-child {
+    margin-right: 0;
+}
+
+.document-preview-component .options .delete-option .delete-mode-on .question,
+.document-preview-component .options .delete-option .delete-mode-on button,
+.document-preview-component .options .edit-option .edit-mode-on button {
+    margin-right: 12px; 
+    margin-right: 0.75rem;
+}
+
+.document-preview-component .options .delete-option .delete-mode-on .question {
+    font-size: small;
+}
+
+
+.document-preview-component .options .delete-option .delete-mode-on button:last-child,
+.document-preview-component .options .edit-option .edit-mode-on button:last-child {
+    margin-right: 0;
+}
+
+.document-preview-component .document {
+    display: flex;
+    flex-direction: column;
+}
+
+.document-preview-component .document .cover-image {
+    align-self: center;
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+    max-width: 240px;
+    max-width: 15rem;
+}
+
+.document-preview-component .document .metadata {
+}
+
+
+/**
+ * General View Component Styles
+ */
+
+.view {
+    display: flex;
+    width: 100%;
+}
+
+.view .view-submenu {
+    background-color: #222222;
+    box-sizing: border-box;
+    display: flex;
+    height: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 12px;
+    padding: 0.75rem;
+    width: 240px;
+    width: 15rem;
+}
+
+.view .view-content {
+    box-sizing: border-box;
+    display: flex;
+    padding: 24px;
+    padding: 1.5rem;
+    height: 100%;
+    width: 100%;
+}
+
+
+/**
+ * App View Component
+ */
+
+.app-component {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.app-component > .main-content-wrapper {
+    display: flex;
+    height: 100%;
+}
+
+.app-component > .main-content-wrapper .content-components-wrapper {
+    display: flex;
+    flex-shrink: 1;
+    flex-grow: 1;
+    padding: 24px;
+    padding: 1.5rem;
+    width: 100%;
+}
+
+
+/**
+ * Document Lists View Component
+ */
+
+#document-lists-view-component {
+    display: flex;
+    width: 100%;
+}
+
+
+/**
+ * Document New View
+ */
+
+.document-new-component {
+    display: flex;
+    flex-direction: column;
+}
+
+.document-new-component .document-shelf-component {
+    margin-top: 48px;
+    margin-top: 3rem;
+}
+
 
 
 

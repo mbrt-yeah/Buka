@@ -1,7 +1,9 @@
+import { f } from '@marcj/marshal';
+
 export default class FacetValue {
-    public count: number;
-    public text: string;
-    public docs: string[];
+    @f public count: number;
+    @f public text: string;
+    @f.array(String) public docs: string[];
 
     public constructor() {
         this.count = 0;

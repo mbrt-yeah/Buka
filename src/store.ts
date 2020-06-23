@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import BookListStoreModule from './componentz/book-list/book-list-store-module';
+import MainViewStoreModule from '@/views/main/main-view-store-module';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {},
     modules: {
-        BookListStoreModule
+        MainViewStoreModule
     }
 });
 

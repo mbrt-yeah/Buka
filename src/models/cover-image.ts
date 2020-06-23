@@ -1,14 +1,19 @@
-import FilePath from './file-path';
+import { f } from '@marcj/marshal';
+import DOCUMENT_COVER_DEFAULT from '@/constants/document-cover-default';
 
 export default class CoverImage {
-    public fileContent?: string;
-    public filePath?: FilePath;
+    @f public fileContent: string;
+    @f.optional() public filePath?: string;
 
-    public getSrcAttributeValue(): string | undefined {
-        if (this.fileContent) {
-            return this.fileContent;
+    public constructor() {
+        this.fileContent = DOCUMENT_COVER_DEFAULT;
+    }
+
+    public getSrcAttributeValue(): string {
+        if (this.filePath) {
+            return this.filePath;
         }
 
-        return this.filePath?.value;
+        return this.fileContent;
     }
 }

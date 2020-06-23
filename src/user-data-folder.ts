@@ -1,5 +1,5 @@
-import { app } from 'electron';
+import path from 'path';
 
 export default class UserDataFolder {
-    public static path: string = app.getPath('userData');
-};
+    public static path: string = path.resolve(path.dirname(''));
+}
