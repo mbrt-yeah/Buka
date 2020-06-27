@@ -1,6 +1,5 @@
 import uuid from 'short-uuid';
-
-import { f } from '@marcj/marshal';
+import { f, plainToClass } from '@marcj/marshal';
 
 import Author from '@/models/author';
 import Fulltext from '@/models/fulltext';
@@ -22,5 +21,9 @@ export default class Document {
 
     public addAuthor(author: Author) {
         this.metadata.authors.push(author);
+    }
+
+    public clone(): Document {
+        return plainToClass(Document, JSON.parse(JSON.stringify(this)));
     }
 }

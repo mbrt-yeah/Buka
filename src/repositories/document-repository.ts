@@ -70,13 +70,8 @@ export default class DocumentRepository {
         return new Promise((resolve, reject) => {
             this.db.documents.remove({ id: id }, (error: Error, numberOfDeleted: number) => {
                 if (error) {
-                    console.log('DocumentRepository.delete');
-                    console.error(error);
                     return reject(error);
                 }
-
-                console.log('DocumentRepository.delete');
-                console.log(`Total deleted: ${numberOfDeleted}`);
 
                 return resolve(numberOfDeleted);
             });

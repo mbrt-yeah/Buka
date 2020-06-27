@@ -44,7 +44,7 @@ p, form {
 
 
 /**
- *
+ * Form Elements
  */
 
 input[type=text],
@@ -85,6 +85,34 @@ input[type=text]:focus {
 
 
 /**
+ * Tippy Tooltip Component
+ */
+
+.tippy-tooltip {
+    border-radius: 0;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.tippy-tooltip.buka-theme {
+    top: 12px;
+    top: 0.75rem;
+}
+
+.tippy-tooltip.buka-theme .tippy-arrow {}
+
+
+/**
+ * Search Dropdown Component
+ */
+
+.search-dropdown-component {
+    padding: 12px;
+    padding: 0.75rem;
+}
+
+
+/**
  * Buttons
  */
 
@@ -104,10 +132,7 @@ input[type=text]:focus {
     font-size: x-small;
 }
 
-.button-icon-only {
-    width: 48px;
-    width: 3rem;
-}
+.button-icon-only {}
 
 .button-icon-only .text {
     left: -9999px;
@@ -300,6 +325,7 @@ input[type=text]:focus {
     background-color: #43cc60 !important;
     border-left-color: #287b3a !important;
 }
+
 
 /**
  * Editable Text Field Component
@@ -714,15 +740,23 @@ input[type=text]:focus {
 
 .view .view-submenu {
     background-color: #222222;
-    box-sizing: border-box;
+    box-sizing: content-box;
     display: flex;
-    height: 100%;
+    flex-direction: column;
     list-style-type: none;
     margin: 0;
     padding: 12px;
     padding: 0.75rem;
     width: 240px;
     width: 15rem;
+}
+
+.view .view-submenu .view-submenu-header {
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+    padding-bottom: 12px;
+    padding-bottom: 0.75rem;
+    position: relative;
 }
 
 .view .view-content {
@@ -761,12 +795,124 @@ input[type=text]:focus {
 
 
 /**
+ * Document Library View Component
+ */
+
+#document-library-view-component {
+
+}
+
+#document-library-view-component .facets,
+#document-library-view-component .facet-values,
+#document-library-view-component .facet-values-selected {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#document-library-view-component .facet-values-selected .facet-value-selected {
+    align-items: center;
+    background-color: #2d3c67;
+    border-radius: 2px;
+    border-radius: 0.125rem;
+    display: flex;
+    font-size: small;
+    padding: 6px;
+    padding: 0.375rem;
+}
+
+#document-library-view-component .facet-values-selected .facet-value-selected .facet-value-selected-text {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+    width: 87%;
+}
+
+#document-library-view-component .facets .facet {
+    font-size: small;
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+}
+
+#document-library-view-component .facets .facet .facet-name {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+}
+
+#document-library-view-component .facets .facet:last-child {
+    margin-bottom: 0;
+}
+
+
+#document-library-view-component .facet-values .facet-value {
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+    padding-left: 12px;
+    padding-left: 0.75rem;
+}
+
+#document-library-view-component .facet-values .facet-value:hover {
+    border-left: 3px solid #4169e1;
+    padding-left: 9px;
+    padding-left: 0.5625rem;
+}
+
+#document-library-view-component .facet-values .facet-value .facet-value-name {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+#document-library-view-component .facet-values .facet-value:last-child {
+    margin-bottom: 0;
+}
+
+
+/**
  * Document Lists View Component
  */
 
 #document-lists-view-component {
     display: flex;
     width: 100%;
+}
+
+#document-lists-view-component .add-list-form {
+    background-color: #111111;
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    padding: 12px;
+    padding: 0.75rem;
+    position: absolute;
+    top: 24px;
+    top: 1.5rem;
+    width: 184px;
+    width: 11.5rem;
+}
+
+#document-lists-view-component .add-list-form input[type=text] {
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+}
+
+#document-lists-view-component .add-list-form .add-list-form-buttons {
+    display: flex;
+}
+
+#document-lists-view-component .add-list-form .add-list-form-buttons button {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+#document-lists-view-component .add-list-form .add-list-form-buttons button:last-child {
+    margin-right: 0;
+}
+
+#document-lists-view-component .document-lists {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 

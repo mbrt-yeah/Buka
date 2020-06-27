@@ -1,18 +1,31 @@
 <template>
     <div class="view" id="document-lists-view-component">
-        <ul class="view-submenu">
-            <li v-for="list in lists" :key="list.id">
-                <h5 class="list-title">
-                <span class="text">{{list.name}}</span>
-                <label-component :value="list.count" />
-                </h5>
-                <ul v-if="list.entries.length > 0" class="list-values">
-                    <li v-for="(entry, index) in list.entries" :key="index" class="list-value">
-                        <span class="text">{{entry.text}}</span>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+        <div class="view-submenu">
+            <div class="view-submenu-header">
+                <button type="button" class="button button-text button-icon-right" @click="onAddNewListClick">
+                    <span class="iconmonstr iconmonstr-buka-plus"></span>
+                    {{ $t('Add New List') }}
+                </button>
+
+                <form class="add-list-form" v-if="addNewListMode">
+                    <input type="text" :placeholder="$t('Insert List Title')" v-model="listNewName" />
+                    <div class="add-list-form-buttons">
+                        <button type="button" class="button button-small button-text button-positive" @click="onSaveListClick">
+                            <span class="iconmonstr iconmonstr-buka-save"></span> {{ $t('Save') }}
+                        </button>
+                        <button type="button" class="button button-small button-text" @click="onCancelClick">
+                            <span class="iconmonstr iconmonstr-buka-x-mark"></span> {{ $t('Cancel') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <ul class="document-lists">
+                <li v-for="list in lists" :key="list.id">
+                    <span class="list-title">{{list.name}}</span>
+                    <label-component class="list-count" :value="list.count" />
+                </li>
+            </ul>
+        </div>
         <div class="view-content">
             <document-shelf-component
                 v-bind:documents="$store.state.MainViewStoreModule.documents"
@@ -30,33 +43,48 @@
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
     import Facet from '@/models/facet';
     import LabelComponent from '@/components/label-component.vue';
+    import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
+    import LISTS_VIEW_GETTER_TYPE from '@/views/lists/lists-view-getter-type';
+    import SearchDropdownComponent from '@/components/search-dropdown-component.vue';
 
     @Component({
         components: {
             DocumentShelfComponent,
-            LabelComponent
+            LabelComponent,
+            SearchDropdownComponent
         }
     })
     export default class ListsView extends Vue {
+        public addNewListMode: boolean;
         public lists: DocumentList[];
+        public listNewName: string;
 
         public constructor() {
             super();
+            this.addNewListMode = false;
+            this.listNewName = '';
+            this.lists = [];
+        }
 
-            const list1 = new DocumentList();
-            list1.count = 123;
-            list1.name = 'Customization List';
+        public mounted() {
+            this.lists = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LISTS];
+        }
 
-            const listValue1 = new DocumentListEntry();
-            listValue1.text = 'A pretty cool book';
+        public onAddNewListClick() {
+           this.addNewListMode = true;
+        }
 
-            const listValue2 = new DocumentListEntry();
-            listValue2.text = 'Not a very good book';
+        public onCancelClick() {
+            this.addNewListMode = false;
+            this.listNewName = '';
+        }
 
-            list1.entries.push(listValue1);
-            list1.entries.push(listValue2);
-
-            this.lists = [list1];
+        public onSaveListClick() {
+            this.addNewListMode = false;
+            const list = new DocumentList();
+            list.name = this.listNewName;
+            this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.CREATE_LIST, list);
+            this.listNewName = '';
         }
     }
 </script>
