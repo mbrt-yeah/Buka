@@ -2,12 +2,12 @@
     <div class="view" id="document-lists-view-component">
         <div class="view-submenu">
             <div class="view-submenu-header">
-                <button type="button" class="button button-text button-icon-right" @click="onAddNewListClick">
+                <button v-if="!addNewListMode" type="button" class="button button-text button-icon-right" @click="onAddNewListClick">
                     <span class="iconmonstr iconmonstr-buka-plus"></span>
                     {{ $t('Add New List') }}
                 </button>
 
-                <form class="add-list-form" v-if="addNewListMode">
+                <form v-if="addNewListMode" class="add-list-form" >
                     <input type="text" :placeholder="$t('Insert List Title')" v-model="listNewName" />
                     <div class="add-list-form-buttons">
                         <button type="button" class="button button-small button-text button-positive" @click="onSaveListClick">
@@ -20,17 +20,23 @@
                 </form>
             </div>
             <ul class="document-lists">
-                <li v-for="list in lists" :key="list.id">
-                    <span class="list-title">{{list.name}}</span>
-                    <label-component class="list-count" :value="list.count" />
+                <li v-for="(list, index) of lists" :key="list._id" class="document-list">
+                    <button type="button" class="button button-small button-text document-list-title" @click="onListNameClick(list)">{{ list.name }}</button>
+                    <label-component class="document-list-count" :value="list.count" />
+                    <button type="button" class="button button-small button-icon-only button-text button-negative document-list-delete-button" @click="onDeleteListClick(index, list)">
+                        <span class="iconmonstr iconmonstr-buka-trash-can"></span>
+                        <span class="text">{{ $t('Delete List') }}</span>
+                    </button>
                 </li>
             </ul>
         </div>
         <div class="view-content">
+            <!--
             <document-shelf-component
                 v-bind:documents="$store.state.MainViewStoreModule.documents"
                 v-bind:showDocumentPreview="true"
             />
+            -->
         </div>
     </div>
 </template>
@@ -41,10 +47,13 @@
     import DocumentList from '@/models/document-list';
     import DocumentListEntry from '@/models/document-list-entry';
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
+    import EditableTextfield from '@/components/editable-textfield.vue';
+    import EditableTextfieldChangeEvent from '@/components/editable-textfield-change-event.vue';
     import Facet from '@/models/facet';
     import LabelComponent from '@/components/label-component.vue';
     import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
     import LISTS_VIEW_GETTER_TYPE from '@/views/lists/lists-view-getter-type';
+    import NotifcationService from '@/services/notification-service';
     import SearchDropdownComponent from '@/components/search-dropdown-component.vue';
 
     @Component({
@@ -66,8 +75,9 @@
             this.lists = [];
         }
 
-        public mounted() {
-            this.lists = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LISTS];
+        public async mounted() {
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS);
+            this.lists = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS];
         }
 
         public onAddNewListClick() {
@@ -79,12 +89,24 @@
             this.listNewName = '';
         }
 
-        public onSaveListClick() {
-            this.addNewListMode = false;
+        public async onDeleteListClick(index: number, list: DocumentList) {
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.DELETE_LIST, index);
+            NotifcationService.success(`List ${list.name} deleted`);
+        }
+
+        public onListNameClick(list: DocumentList) {
+            console.log(list);
+        }
+
+        public async onSaveListClick() {
             const list = new DocumentList();
             list.name = this.listNewName;
-            this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.CREATE_LIST, list);
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.CREATE_LIST, list);
+
+            this.addNewListMode = false;
             this.listNewName = '';
+
+            NotifcationService.success(`List ${list.name} created`);
         }
     }
 </script>

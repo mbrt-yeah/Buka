@@ -752,8 +752,9 @@ input[type=text]:focus {
 }
 
 .view .view-submenu .view-submenu-header {
-    margin-bottom: 12px;
-    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #1b1b1b;
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
     padding-bottom: 12px;
     padding-bottom: 0.75rem;
     position: relative;
@@ -878,17 +879,12 @@ input[type=text]:focus {
 }
 
 #document-lists-view-component .add-list-form {
-    background-color: #111111;
     display: flex;
     flex-direction: column;
-    left: 0;
-    padding: 12px;
-    padding: 0.75rem;
-    position: absolute;
-    top: 24px;
-    top: 1.5rem;
-    width: 184px;
-    width: 11.5rem;
+    margin: 0;
+    padding: 0;
+    width: 208px;
+    width: 13rem;
 }
 
 #document-lists-view-component .add-list-form input[type=text] {
@@ -913,6 +909,41 @@ input[type=text]:focus {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+#document-lists-view-component .document-lists .document-list {
+    align-items: center;
+    display: flex;
+    font-size: small;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+    padding: 0;
+}
+
+#document-lists-view-component .document-lists .document-list:hover {
+    border-left: 3px solid #4169e1;
+    padding-left: 9px;
+    padding-left: 0.5625rem;
+}
+
+#document-lists-view-component .document-lists .document-list:last-child {
+    margin-bottom: 0;
+}
+
+#document-lists-view-component .document-lists .document-list .document-list-title,
+#document-lists-view-component .document-lists .document-list .document-list-count {
+    text-align: left;
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+#document-lists-view-component .document-lists .document-list .document-list-delete-button {
+    display: none;
+}
+
+#document-lists-view-component .document-lists .document-list:hover .document-list-delete-button {
+    display: block;
 }
 
 
