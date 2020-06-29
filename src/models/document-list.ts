@@ -1,5 +1,5 @@
 import uuid from 'short-uuid';
-import { f } from '@marcj/marshal';
+import { f, plainToClass } from '@marcj/marshal';
 
 import DocumentListEntry from '@/models/document-list-entry';
 
@@ -16,5 +16,9 @@ export default class DocumentList {
         this.count = 0;
         this.entries = [];
         this.name = '';
+    }
+
+    public clone(): DocumentList {
+        return plainToClass(DocumentList, JSON.parse(JSON.stringify(this)));
     }
 }
