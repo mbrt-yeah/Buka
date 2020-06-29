@@ -983,12 +983,24 @@ input[type=text]:focus {
  * Document New View
  */
 
-.document-new-component {
-    display: flex;
+#add-document-view-component .view-content {
     flex-direction: column;
 }
 
-.document-new-component .document-shelf-component {
+#add-document-view-component .buttons {
+    text-align: center;
+}
+
+#add-document-view-component .buttons .button {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+#add-document-view-component .buttons .button:last-child {
+    margin-right: 0;
+}
+
+#add-document-view-component .document-shelf-component {
     margin-top: 48px;
     margin-top: 3rem;
 }

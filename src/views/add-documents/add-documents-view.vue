@@ -1,25 +1,34 @@
 <template>
-    <div class="document-new-component">
-        <vue-auto-dropzone
-            :options="dropzoneOptions"
-            :include-styling="false"
-            :destroyDropzone="true"
-            @addedfile="onAddedFile"
-            class="document-new-dropzone"
-            ref="dropzone" 
-        />
-        <button 
-            v-bind:class="{ disabled: dropzoneFilesTotal > 0 }"
-            @click="onAddDocumentsClick"
-            class="button button-small button-outline-only"
-            id="add-new-documents-button"
-            type="button">Add {{dropzoneFilesTotal}} Documents</button>
+    <div class="view" id="add-document-view-component" >
+        <div class="view-content">
+            <vue-auto-dropzone
+                :options="dropzoneOptions"
+                :include-styling="false"
+                :destroyDropzone="true"
+                @addedfile="onAddedFile"
+                class="document-new-dropzone"
+                ref="dropzone" 
+            />
 
-        <document-shelf-component 
-            v-bind:documents="documents"
-            v-bind:showDocumentPreview="true"
-            v-if="documents.length > 0"
-        />
+            <div class="buttons">
+                <button 
+                    type="button" 
+                    class="button button-small button-text button-positive" @click="onSaveClick">
+                    <span class="iconmonstr iconmonstr-buka-save"></span>
+                    {{ $t(`Save ${dropzoneFilesTotal} Documents`) }}
+                </button>
+                <button type="button" class="button button-small button-text" @click="onCancelClick">
+                    <span class="iconmonstr iconmonstr-buka-x-mark"></span>
+                    {{ $t('Cancel') }}
+                </button>
+            </div>
+
+            <document-shelf-component 
+                v-bind:documents="documents"
+                v-bind:showDocumentPreview="true"
+                v-if="documents.length > 0"
+            />
+        </div>
     </div>
 </template>
 
@@ -82,7 +91,12 @@
             this.dropzoneFilesTotal = 0;
         }
 
-        public async onAddDocumentsClick(): Promise<void> {
+        public onCancelClick() {
+            this.dropzone.removeAllFiles(true);
+            this.dropzoneFilesTotal = 0;
+        }
+
+        public async onSaveClick(): Promise<void> {
             const acceptedFiles = this.dropzone['acceptedFiles']
             const acceptedFilesTotal = acceptedFiles.length;
 
@@ -115,7 +129,7 @@
                 this.documents.push(createResult);
             }
 
-            NotifictionService.success(`${acceptedFilesTotal} documents added`);
+            NotifictionService.success(`${acceptedFilesTotal} documents saved`);
 
             this.dropzone.removeAllFiles(true);
             this.dropzoneFilesTotal = 0;
