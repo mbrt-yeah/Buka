@@ -72,15 +72,36 @@ export default class NewDocumentHandlerPDF {
 
     private async extractCoverImg(pdfDocumentProxy: PDFDocumentProxy): Promise<any> {
         return new Promise((resolve, reject) => {
-            const onSuccess = (result: PDFPageProxy) => {
-                resolve();
-            };
-
             const onError = (reason: string) => {
                 reject( new Error(reason) );
             };
 
-            pdfDocumentProxy.getPage(1).then(onSuccess, onError);
+            const onSuccessRender = (canvas: HTMLCanvasElement) => {
+                const converImgBase64Encoded = canvas.toDataURL('image/png', 1).replace(/^data:image\/png;base64,/, '');
+                canvas.remove();
+                resolve(converImgBase64Encoded);
+            };
+
+            const onSuccessGetPage = (page: PDFPageProxy) => {
+                const canvas = document.createElement('canvas');
+                const canvasContext = canvas.getContext('2d');
+                const viewport = page.getViewport({
+                    scale: 0.5
+                });
+
+                canvas.width = 300;
+                canvas.height = viewport.height;
+
+                if (!canvasContext) {
+                    throw new Error('canvasContext is null or undefined');
+                }
+
+                page.render({canvasContext, viewport}).promise.then(() => {
+                    onSuccessRender(canvas);
+                }, onError);
+            };
+
+            pdfDocumentProxy.getPage(1).then(onSuccessGetPage, onError);
         });
     }
 
@@ -93,14 +114,17 @@ export default class NewDocumentHandlerPDF {
                 const embeddedMetadata: Metadata = new Metadata();
 
                 if (result.metadata) {
-                    embeddedMetadata.title = result.metadata.get('dc:title') || this.filePDF.name;
+                    const dcTitle = result.metadata.get('dc:title');
+
+                    if (dcTitle && dcTitle !== '') {
+                        embeddedMetadata.title = dcTitle;
+                    }
+
                     embeddedMetadata.description = result.metadata.get('dc:description');
                     //embeddedMetadata.authors = result.metadata.get('dc:creator');
                 }
 
-                const finalMetadata: Metadata = Object.assign(defaultMetadata, embeddedMetadata);
-
-                resolve(finalMetadata);
+                resolve( defaultMetadata.merge(embeddedMetadata) );
             };
 
             const onError = (reason: string) => {
