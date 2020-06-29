@@ -31,6 +31,21 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Mutation
+    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST](documentListNew: DocumentList) {
+        let i = 0;
+        const l = this._documentLists.length;
+
+        for (i; i < l; i++) {
+            if (this._documentLists[i]._id === documentListNew._id) {
+                continue;
+            }
+
+            this._documentLists[i] = documentListNew;
+            break;
+        }
+    }
+
+    @Mutation
     public [LISTS_VIEW_MUTATION_TYPE.SET_LISTS](documentLists: DocumentList[]) {
         this._documentLists = documentLists;
     }
@@ -94,5 +109,22 @@ export default class ListsViewStoreModule extends VuexModule {
         this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LISTS, readAllResult);
 
         return readAllResult;
+    }
+
+    @Action
+    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentList: DocumentList) {
+        const [updateError, updateResult] = await to<number>( DocumentListRepository.update(documentList) );
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        if (updateResult === undefined) {
+            return;
+        }
+
+        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST, documentList);
+
+        return updateResult;
     }
 }
