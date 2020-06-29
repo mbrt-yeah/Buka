@@ -112,11 +112,13 @@
             const listToUpdate = this.lists[index].clone();
             listToUpdate.name = event.value;
             await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_LIST, listToUpdate);
+
             NotifcationService.success(`List Updated`);
         }
 
         public async onDelete(index: number, list: DocumentList) {
             await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.DELETE_LIST, index);
+
             NotifcationService.success(`List with name &raquo;${list.name}&laquo; deleted`);
         }
 
