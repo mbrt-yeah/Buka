@@ -22,4 +22,26 @@ export default class Metadata {
     public setProperty(name: string, value: any) {
         this[name] = value;
     }
+
+    public merge(metadataToMerge: Metadata): Metadata {
+        this.authors.push(...metadataToMerge.authors);
+
+        if (metadataToMerge.description && metadataToMerge.description !== '') {
+            this.description = metadataToMerge.description;
+        }
+
+        if (metadataToMerge.pagesTotal && metadataToMerge.pagesTotal !== 0) {
+            this.pagesTotal = metadataToMerge.pagesTotal;
+        }
+
+        if (metadataToMerge.publicationYear && metadataToMerge.publicationYear !== 0) {
+            this.publicationYear = metadataToMerge.publicationYear;
+        }
+
+        if (metadataToMerge.title && metadataToMerge.title !== '') {
+            this.title = metadataToMerge.title;
+        }
+
+        return this;
+    }
 }
