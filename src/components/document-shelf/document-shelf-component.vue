@@ -25,7 +25,7 @@
             </div>
             <ul :class="`document-shelf ${displayOptionCurrent}`">
                 <li 
-                    v-for="(document, index) in this.$store.state[this.id].documents" 
+                    v-for="(document, index) in documents" 
                     :key="document.id" class="document" 
                     @click="onDocumentClick(index)"
                     :class="[(index === documentFocusedIndex) ? 'selected' : '']"
@@ -48,8 +48,8 @@
         <document-preview-component 
             v-if="showDocumentPreview" 
             v-bind:document="documents[documentFocusedIndex]"
-            v-on:deletedocument="onDeleteDocument"
-            v-on:updatedocument="onUpdateDocument"
+            v-on:documentDelete="onDocumentDelete([documentFocusedIndex, $event])"
+            v-on:documentUpdate="onDocumentUpdate([documentFocusedIndex, $event])"
         />
     </div>
 </template>
@@ -65,7 +65,6 @@
     import DocumentPreviewComponent from '@/components/document-preview-component.vue';
     import DocumentShelfComponentStoreModule from '@/components/document-shelf/document-shelf-component-module';
     import LIST_DISPLAY_OPTION from '@/constants/list-display-option';
-    import NotifcationService from '@/services/notification-service';
 
     @Component({
         components: {
@@ -123,14 +122,17 @@
             this.displayOptionCurrent = this.$store.state[this.id].documentListDisplayOption;
         }
 
-        public async onDeleteDocument(document: Document) {
-            await this.$store.dispatch(DOCUMENT_SHELF_ACTION_TYPE.DELETE_DOCUMENT, document);
-            NotifcationService.success(`${document.metadata.title} deleted`);
-        }
-
         public onDocumentClick(index: number) {
             this.$store.commit(DOCUMENT_SHELF_MUTATION_TYPE.SET_DOCUMENT_FOCUSED_INDEX, index);
             this.documentFocusedIndex = this.$store.state[this.id].documentFocusedIndex;
+        }
+
+        public onDocumentDelete(payload: any) {
+            this.$emit('documentDelete', payload);
+        }
+
+        public onDocumentUpdate(payload: any) {
+            this.$emit('documentUpdate', payload);
         }
 
         @Watch('documentSortOptionSelected')
@@ -140,10 +142,7 @@
             this.$store.commit(DOCUMENT_SHELF_MUTATION_TYPE.SORT_DOCUMENTS, sortOption);
         }
 
-        public async onUpdateDocument(document: Document) {
-            await this.$store.dispatch(DOCUMENT_SHELF_ACTION_TYPE.UPDATE_DOCUMENT, document);
-            NotifcationService.success(`${document.metadata.title} updated`);
-        }
+        
     }
 </script>
 
