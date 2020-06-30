@@ -107,7 +107,7 @@
         }
 
         public async onDeleteYesClick(): Promise<void> {
-            this.$emit('deletedocument', this.document);
+            this.$emit('documentDelete', this.document);
             this.isDeleteMode = false;
         }
 
@@ -116,7 +116,7 @@
         }
 
         public async onSaveClick(): Promise<void> {
-            this.$emit('updatedocument', this.document);
+            this.$emit('documentUpdate', this.document);
             this.isEditMode = false;
         }
     }
