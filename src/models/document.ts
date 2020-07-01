@@ -1,6 +1,7 @@
 import uuid from 'short-uuid';
 import { f, plainToClass } from '@marcj/marshal';
 
+import arrayfy from '@/utils/arrayfy';
 import Author from '@/models/author';
 import Fulltext from '@/models/fulltext';
 import CoverImage from '@/models/cover-image';
@@ -19,11 +20,20 @@ export default class Document {
         this.metadata.title = title;
     }
 
-    public addAuthor(author: Author) {
-        this.metadata.authors.push(author);
+    public addAuthors(authors: Author | Author[]) {
+        authors = arrayfy<Author>(authors);
+        this.metadata.authors.push(...authors);
     }
 
     public clone(): Document {
         return plainToClass(Document, JSON.parse(JSON.stringify(this)));
+    }
+
+    public hasAuthor(authorString: string): boolean {
+        const index = this.metadata.authors.findIndex((author: Author) => {
+            return author.asFacetValue() === authorString;
+        });
+
+        return (index !== -1) ? true : false;
     }
 }

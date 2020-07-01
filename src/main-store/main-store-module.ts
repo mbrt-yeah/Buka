@@ -1,6 +1,8 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import to from 'await-to-js';
 
+import Author from '@/models/author';
+
 import deleteFile from '@/utils/delete-file';
 import Document from '@/models/document';
 import DocumentRepository from '@/repositories/document-repository';
@@ -73,8 +75,13 @@ export default class MainStoreModule extends VuexModule {
             return readAllResult;
         }
 
-        const filtersAvailable: { [key: string]: (documents: Document[], filterCriteria: number | string) => Document[] } = {
-            'publicationYear': (documents: Document[], filterCriteria: number | string): Document[] => {
+        const filtersAvailable: { [key: string]: (documents: Document[], filterCriteria: number | string | Author) => Document[] } = {
+            'author': (documents: Document[], filterCriteria: number | string | Author): Document[] => {
+                return documents.filter((document: Document) => {
+                    return document.hasAuthor(filterCriteria as Author);
+                });
+            },
+            'publicationYear': (documents: Document[], filterCriteria: number | string | Author): Document[] => {
                 return documents.filter((document: Document) => {
                     return document.metadata.publicationYear === filterCriteria;
                 });

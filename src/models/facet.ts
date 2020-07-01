@@ -1,4 +1,6 @@
 import { f } from '@marcj/marshal';
+
+import arrayfy from '@/utils/arrayfy';
 import FacetValue from '@/models/facet-value';
 
 export default class Facet {
@@ -18,11 +20,25 @@ export default class Facet {
     }
 
     public addNewValue(facetValue: FacetValue) {
-        if (this.values[facetValue.name]) {
-            return;
+        const key = facetValue.name as string;
+
+        if (!this.values[key]) {
+            this.values[key] = facetValue;
+            this.values[key].addDocs(facetValue.docs);
         }
 
-        facetValue.facetName = this.name;
-        this.values[facetValue.name] = facetValue;
+        this.values[facetValue.name].count++;
+    }
+
+    public addNewValues(facetValues: FacetValue | FacetValue[]) {
+        facetValues = arrayfy<FacetValue>(facetValues);
+
+        for (const facetValue of facetValues) {
+            this.addNewValue(facetValue);
+        }
+    }
+
+    public valuesTotal(): number {
+        return Object.keys(this.values).length;
     }
 }

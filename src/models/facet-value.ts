@@ -1,5 +1,7 @@
 import { f } from '@marcj/marshal';
 
+import arrayfy from '@/utils/arrayfy';
+
 export default class FacetValue {
     @f
     public count: number;
@@ -18,5 +20,10 @@ export default class FacetValue {
         this.docs = [];
         this.facetName = '';
         this.name = '';
+    }
+
+    public addDocs(docIds: string | string[]) {
+        docIds = arrayfy<string>(docIds);
+        this.docs.push(...docIds);
     }
 }

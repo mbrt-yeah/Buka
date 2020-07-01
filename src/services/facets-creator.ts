@@ -8,24 +8,26 @@ export default class FacetsCreator {
         facetPublicationYear.name = 'publicationYear';
         facetPublicationYear.type = 'date';
 
-        documents.forEach((document: Document) => {
-            const id = document.id;
-            const publicationYear = document.metadata.publicationYear;
-            const publicationYearKey = publicationYear.toString();
+        const facetAuthor: Facet = new Facet();
+        facetAuthor.name = 'author';
+        facetAuthor.type = 'text';
 
-            if ( !facetPublicationYear.values[publicationYearKey] ) {
-                const facetValueNew = new FacetValue();
-                facetValueNew.name = document.metadata.publicationYear;
-                facetPublicationYear.addNewValue(facetValueNew);
+        for (const document of documents) {
+            const facetValuePublicationYear: FacetValue = new FacetValue();
+            facetValuePublicationYear.name = document.metadata.publicationYear;
+            facetValuePublicationYear.facetName = facetPublicationYear.name;
+            facetValuePublicationYear.addDocs(document.id);
+            facetPublicationYear.addNewValues(facetValuePublicationYear);
+
+            for (const author of document.metadata.authors) {
+                const facetValueAuthor: FacetValue = new FacetValue();
+                facetValueAuthor.name = author.asFacetValue();
+                facetValueAuthor.facetName = facetAuthor.name;
+                facetValueAuthor.addDocs(document.id);
+                facetAuthor.addNewValues(facetValueAuthor);
             }
+        }
 
-            const facetValue = facetPublicationYear.values[publicationYearKey];
-
-            facetValue.count++;
-            facetValue.docs.push(id);
-            facetPublicationYear.values[publicationYearKey] = facetValue;
-        });
-
-        return [facetPublicationYear];
+        return [facetPublicationYear, facetAuthor];
     }
 }
