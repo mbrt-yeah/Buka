@@ -1,4 +1,9 @@
 module.exports = {
     outputDir: 'dist',
-    publicPath: ''
+    publicPath: '',
+    pluginOptions: {
+        electronBuilder: {
+            nodeIntegration: true
+        }
+    }
 };

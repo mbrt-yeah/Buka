@@ -1,9 +1,10 @@
 import Datastore from 'nedb';
+import * as path from 'path';
 
+import Configuration from '@/configuration';
 import Document from '@/models/document';
 import DocumentList from '@/models/document-list';
 import Facet from '@/models/facet';
-import UserDataFolder from '@/user-data-folder';
 
 export default class Database {
     private static _instance: Database;
@@ -13,16 +14,22 @@ export default class Database {
     public documentLists: Datastore<DocumentList>;
 
     constructor() {
-        this.facets =  new Datastore({ filename: `${UserDataFolder.path}/dbs/facets.db`, autoload: true });
-        this.documents = new Datastore({ filename: `${UserDataFolder.path}/dbs/documents.db`, autoload: true });
-        this.documentLists = new Datastore({ filename: `${UserDataFolder.path}/dbs/documentLists.db`, autoload: true });
+        const appDataDirPath = Configuration.instance().appDataDirPath;
+        this.facets =  new Datastore({ filename: path.join(appDataDirPath, 'dbs', 'facets.db'), autoload: true });
+        this.documents = new Datastore({ filename: path.join(appDataDirPath, 'dbs', 'documents.db'), autoload: true });
+        this.documentLists = new Datastore({ filename: path.join(appDataDirPath, 'dbs', 'document-lists.db'), autoload: true });
+    }
+
+    public static init(): void {
+        if (Database._instance) {
+            return;
+        }
+
+        Database._instance = new Database();
     }
 
     public static instance(): Database {
-        if (!Database._instance) {
-            Database._instance = new Database();
-        }
-
+        Database.init();
         return Database._instance;
     }
 }
