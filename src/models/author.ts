@@ -15,4 +15,22 @@ export default class Author {
         this.middlename = '';
         this.surname = '';
     }
+
+    public asFacetValue(): string {
+        return this.toString();
+    }
+
+    public toString(): string {
+        let s = this.surname;
+
+        if (this.firstname) {
+            s += `, ${this.firstname}`;
+        }
+
+        if (this.middlename) {
+            s += ` ${this.middlename}`;
+        }
+
+        return s;
+    }
 }

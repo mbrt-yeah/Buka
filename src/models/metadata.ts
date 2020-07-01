@@ -19,6 +19,16 @@ export default class Metadata {
         this.title = '';
     }
 
+    public authorsAsFacetValues(): string[] {
+        const facetValues: string[] = [];
+
+        for(const author of this.authors) {
+            facetValues.push( author.asFacetValue() );
+        }
+
+        return facetValues;
+    }
+
     public setProperty(name: string, value: any) {
         this[name] = value;
     }

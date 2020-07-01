@@ -13,7 +13,7 @@
                 </ul>
             </div>
             <ul class="facets">
-                <li v-for="facet in facets" :key="facet.name" class="facet">
+                <li v-for="facet in facets" :key="facet.name" v-show="facet.valuesTotal() > 0" class="facet">
                     <span class="facet-name">{{ $t(facet.name) }}</span>
                     <ul class="facet-values">
                         <li v-for="(facetValue, key) in facet.values" :key="key" class="facet-value">
