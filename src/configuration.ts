@@ -9,6 +9,7 @@ export default class Configuration {
 
     public appName: string;
     public appDataDirPath: string;
+    public coverImagesDirPath: string;
     public documentListDisplay: DocumentListDisplayConfiguration;
     public documentMetadataFieldOrder: DocumentMetadataFieldOrderConfiguration;
     public documentSorting: DocumentSortingConfiguration;
@@ -16,6 +17,7 @@ export default class Configuration {
     public constructor() {
         this.appName = 'Buka';
         this.appDataDirPath = path.resolve(path.dirname(''));
+        this.coverImagesDirPath = path.join(this.appDataDirPath, 'public', 'cover-images');
         this.documentListDisplay = new DocumentListDisplayConfiguration();
         this.documentMetadataFieldOrder = new DocumentMetadataFieldOrderConfiguration();
         this.documentSorting = new DocumentSortingConfiguration();

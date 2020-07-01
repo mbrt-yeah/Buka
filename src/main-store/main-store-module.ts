@@ -1,6 +1,7 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import to from 'await-to-js';
 
+import deleteFile from '@/utils/delete-file';
 import Document from '@/models/document';
 import DocumentRepository from '@/repositories/document-repository';
 
@@ -107,6 +108,10 @@ export default class MainStoreModule extends VuexModule {
         const documentsNew = this.documents.filter((document: Document) => {
             return document.id !== documentToDelete.id;
         });
+
+        if (documentToDelete.coverImage.filePath) {
+            deleteFile(documentToDelete.coverImage.filePath);
+        }
 
         this.context.commit(MAIN_STORE_MUTATION_TYPE.SET_DOCUMENTS, documentsNew);
 

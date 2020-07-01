@@ -7,6 +7,8 @@ import Fulltext from '@/models/fulltext';
 import FULLTEXT_TYPE from '@/constants/fulltext-type';
 import Metadata from '@/models/metadata';
 import CoverImage from '@/models/cover-image';
+import saveFile from '@/utils/save-file';
+import Configuration from '@/configuration';
 
 export default class NewDocumentHandlerPDF {
     private readonly filePDF: File;
@@ -31,15 +33,22 @@ export default class NewDocumentHandlerPDF {
         return new Promise(async (resolve, reject) => {
             pdfPromise.then(
                 async (pdfDocumentProxy: PDFDocumentProxy) => {
-                    const coverImage: CoverImage = await this.extractCoverImg(pdfDocumentProxy);
-                    const fulltext: Fulltext = new Fulltext(FULLTEXT_TYPE.PDF, path.resolve(this.filePDF.path));
                     const metadata: Metadata = await this.extractMetadata(pdfDocumentProxy);
 
                     const document = new Document(metadata.title);
-                    document.coverImage = coverImage;
-                    document.fullText = fulltext;
+                    document.fullText = new Fulltext(FULLTEXT_TYPE.PDF, path.resolve(this.filePDF.path));
                     document.metadata = metadata;
                     document.metadata.pagesTotal = pdfDocumentProxy.numPages;
+
+                    const coverImageData = await this.extractCoverImageData(pdfDocumentProxy);
+                    const coverImageName = document.id;
+                    const coverImageExt = 'png';
+                    const coverImagePath = saveFile(Configuration.instance().coverImagesDirPath, `${coverImageName}.${coverImageExt}`, coverImageData, 'base64');
+
+                    document.coverImage = new CoverImage();
+                    document.coverImage.filePath = coverImagePath;
+                    document.coverImage.fileName = coverImageName;
+                    document.coverImage.fileExtension = coverImageExt;
 
                     resolve(document);
                 },
@@ -70,16 +79,16 @@ export default class NewDocumentHandlerPDF {
         });
     }
 
-    private async extractCoverImg(pdfDocumentProxy: PDFDocumentProxy): Promise<any> {
+    private async extractCoverImageData(pdfDocumentProxy: PDFDocumentProxy): Promise<string> {
         return new Promise((resolve, reject) => {
             const onError = (reason: string) => {
                 reject( new Error(reason) );
             };
 
             const onSuccessRender = (canvas: HTMLCanvasElement) => {
-                const converImgBase64Encoded = canvas.toDataURL('image/png', 1).replace(/^data:image\/png;base64,/, '');
+                const coverImgBase64Encoded = canvas.toDataURL('image/png', 1).replace(/^data:image\/png;base64,/, '');
                 canvas.remove();
-                resolve(converImgBase64Encoded);
+                resolve(coverImgBase64Encoded);
             };
 
             const onSuccessGetPage = (page: PDFPageProxy) => {
