@@ -371,29 +371,10 @@ input[type=text]:focus {
     margin-right: 0;
 }
 
-/*
-.editable-textfield-component.buka {
-    border-bottom: 1px solid #1b1b1b;
-    font-size: small;
-    padding: 12px 0;
-    padding: 0.75rem 0;
-}
-*/
-
 
 /**
  * Author Metadata Component
  */
-
-.authors-metadata-component.buka {
-    align-items: flex-start;
-    border-bottom: 1px solid #1b1b1b;
-    display: flex;
-    flex-direction: column;
-    font-size: small;
-    padding: 12px 0;
-    padding: 0.75rem 0;
-}
 
 .authors-metadata-component .label {
     align-self: flex-start;
@@ -577,12 +558,16 @@ input[type=text]:focus {
 }
 
 .document-shelf-component .document-shelf {
-    height: 100%;
     list-style-type: none;
     margin: 0;
     padding: 0 24px 0 0;
     padding: 0 1.5rem 0 0;
     overflow-y: scroll;
+}
+
+.document-shelf-component .document-shelf.grid {
+    display: flex;
+    height: auto;
 }
 
 .document-shelf-component .document-shelf .document {
@@ -593,7 +578,8 @@ input[type=text]:focus {
 }
 
 .document-shelf-component .document-shelf.grid .document {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     margin: 0 24px 24px 0 ;
     margin: 0 1.5rem 1.5rem 0;
     max-width: 160px;
@@ -601,6 +587,7 @@ input[type=text]:focus {
 }
 
 .document-shelf-component .document-shelf.list .document {
+    align-items: flex-start;
     display: flex;
     margin-bottom: 24px;
     margin-bottom: 1.5rem;
@@ -628,8 +615,8 @@ input[type=text]:focus {
 .document-shelf-component .document-shelf.list .document img {
     margin-right: 12px;
     margin-right: 0.75rem;
-    height: 160px;
-    height: 10rem;
+    max-width: 160px;
+    max-width: 10rem;
 }
 
 .document-shelf-component .document-shelf .document .metadata {
@@ -743,7 +730,11 @@ input[type=text]:focus {
     max-width: 15rem;
 }
 
-.document-preview-component .document .metadata {
+.document-preview-component .document .metadata .json-schema-form-component .field-wrapper {
+    border-bottom: 1px solid #1b1b1b;
+    font-size: small;
+    padding: 12px 0;
+    padding: 0.75rem 0;
 }
 
 
@@ -836,8 +827,14 @@ input[type=text]:focus {
     border-radius: 0.125rem;
     display: flex;
     font-size: small;
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
     padding: 6px;
     padding: 0.375rem;
+}
+
+#document-library-view-component .facet-values-selected .facet-value-selected:last-child {
+    margin-bottom: 0;
 }
 
 #document-library-view-component .facet-values-selected .facet-value-selected .facet-value-selected-text {
@@ -896,6 +893,12 @@ input[type=text]:focus {
     width: 100%;
 }
 
+
+#document-lists-view-component .view-submenu .view-submenu-header {
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+}
+
 #document-lists-view-component .add-list-form {
     display: flex;
     flex-direction: column;
@@ -933,10 +936,13 @@ input[type=text]:focus {
     align-items: center;
     display: flex;
     font-size: small;
+    height: 32px;
+    height: 2rem;
     justify-content: flex-start;
     margin-bottom: 12px;
     margin-bottom: 0.75rem;
-    padding: 0;
+    padding: 0 0 0 12px;
+    padding: 0 0 0 0.75rem;
 }
 
 #document-lists-view-component .document-lists .document-list:hover {

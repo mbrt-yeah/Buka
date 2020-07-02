@@ -5,14 +5,14 @@
                 <editable-authors-metadata 
                     v-if="propertyValue.type === 'array' && propertyName === 'authors'"
                     v-bind:authorsData="formData[propertyName]"
-                    v-bind:customClasses="`buka ${propertyName}`"
+                    v-bind:customClasses="`${propertyName}`"
                     v-bind:isEditMode="isEditMode"
                     v-bind:label="propertyName"
                     @change="onEditableAuthorsMetadataChange"
                 />
                 <editable-textfield
                     v-if="propertyValue.type === 'number' || propertyValue.type === 'string'"
-                    v-bind:customClasses="`buka ${propertyName}`"
+                    v-bind:customClasses="`${propertyName}`"
                     v-bind:label="propertyName"
                     v-bind:name="propertyName"
                     v-bind:value="formData[propertyName]"
