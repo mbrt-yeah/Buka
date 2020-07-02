@@ -42,7 +42,7 @@
                     </button>
                 </li>
             </ul>
-            <button v-if="isEditMode" type="button" class="button button-x-small button-text button-icon-right" @click="onAddNewAuthorClick">
+            <button v-if="isEditMode" type="button" class="button button-small button-text button-icon-right" @click="onAddNewAuthorClick">
                 <span class="iconmonstr iconmonstr-buka-plus"></span>
                 {{ $t('Add New Author') }}
             </button>

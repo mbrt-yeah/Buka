@@ -371,29 +371,10 @@ input[type=text]:focus {
     margin-right: 0;
 }
 
-/*
-.editable-textfield-component.buka {
-    border-bottom: 1px solid #1b1b1b;
-    font-size: small;
-    padding: 12px 0;
-    padding: 0.75rem 0;
-}
-*/
-
 
 /**
  * Author Metadata Component
  */
-
-.authors-metadata-component.buka {
-    align-items: flex-start;
-    border-bottom: 1px solid #1b1b1b;
-    display: flex;
-    flex-direction: column;
-    font-size: small;
-    padding: 12px 0;
-    padding: 0.75rem 0;
-}
 
 .authors-metadata-component .label {
     align-self: flex-start;
@@ -749,7 +730,11 @@ input[type=text]:focus {
     max-width: 15rem;
 }
 
-.document-preview-component .document .metadata {
+.document-preview-component .document .metadata .json-schema-form-component .field-wrapper {
+    border-bottom: 1px solid #1b1b1b;
+    font-size: small;
+    padding: 12px 0;
+    padding: 0.75rem 0;
 }
 
 
