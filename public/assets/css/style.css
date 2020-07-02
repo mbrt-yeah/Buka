@@ -827,8 +827,14 @@ input[type=text]:focus {
     border-radius: 0.125rem;
     display: flex;
     font-size: small;
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
     padding: 6px;
     padding: 0.375rem;
+}
+
+#document-library-view-component .facet-values-selected .facet-value-selected:last-child {
+    margin-bottom: 0;
 }
 
 #document-library-view-component .facet-values-selected .facet-value-selected .facet-value-selected-text {
