@@ -577,12 +577,16 @@ input[type=text]:focus {
 }
 
 .document-shelf-component .document-shelf {
-    height: 100%;
     list-style-type: none;
     margin: 0;
     padding: 0 24px 0 0;
     padding: 0 1.5rem 0 0;
     overflow-y: scroll;
+}
+
+.document-shelf-component .document-shelf.grid {
+    display: flex;
+    height: auto;
 }
 
 .document-shelf-component .document-shelf .document {
@@ -593,7 +597,8 @@ input[type=text]:focus {
 }
 
 .document-shelf-component .document-shelf.grid .document {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     margin: 0 24px 24px 0 ;
     margin: 0 1.5rem 1.5rem 0;
     max-width: 160px;
@@ -601,6 +606,7 @@ input[type=text]:focus {
 }
 
 .document-shelf-component .document-shelf.list .document {
+    align-items: flex-start;
     display: flex;
     margin-bottom: 24px;
     margin-bottom: 1.5rem;
@@ -628,8 +634,8 @@ input[type=text]:focus {
 .document-shelf-component .document-shelf.list .document img {
     margin-right: 12px;
     margin-right: 0.75rem;
-    height: 160px;
-    height: 10rem;
+    max-width: 160px;
+    max-width: 10rem;
 }
 
 .document-shelf-component .document-shelf .document .metadata {
