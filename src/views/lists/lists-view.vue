@@ -22,27 +22,17 @@
             <ul class="document-lists">
                 <li v-for="(list, index) of lists" :key="list._id" class="document-list">
                     <editable-textfield
-                        :customClasses="'buka'"
-                        :hideLabel="true"
-                        :isStandalone="true"
-                        :label="$t('List Name')"
-                        :name="`list-name-${index}`"
-                        :value="list.name"
-                        @change="onChange(index, $event)"
-                        @delete="onDelete(index, list)"
+                        v-bind:customClasses="'buka'"
+                        v-bind:hideLabel="true"
+                        v-bind:isStandalone="true"
+                        v-bind:label="$t('List Name')"
+                        v-bind:name="`list-name-${index}`"
+                        v-bind:value="list.name"
+                        v-bind:displayValueAs="`button`"
+                        v-on:displayedValueClick="onClick(index, $event)"
+                        v-on:change="onChange(index, $event)"
+                        v-on:delete="onDelete(index, list)"
                     />
-                    <!--
-                    <button type="button" class="button button-small button-text document-list-title" @click="onListNameClick(list)">{{ list.name }}</button>
-                    <label-component class="document-list-count" :value="list.count" />
-                    <button type="button" class="button button-small button-text button-icon-only document-list-edit-button" @click="onEditListClick(index, list)">
-                        <span class="iconmonstr iconmonstr-buka-pencil"></span> 
-                        <span class="text">Edit</span>
-                    </button>
-                    <button type="button" class="button button-small button-icon-only button-text button-negative document-list-delete-button" @click="onDeleteListClick(index, list)">
-                        <span class="iconmonstr iconmonstr-buka-trash-can"></span>
-                        <span class="text">{{ $t('Delete List') }}</span>
-                    </button>
-                    -->
                 </li>
             </ul>
         </div>
@@ -114,6 +104,11 @@
             await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_LIST, listToUpdate);
 
             NotifcationService.success(`List Updated`);
+        }
+
+        public async onClick(index: number, event: string) {
+            console.log(index);
+            console.log(event);
         }
 
         public async onDelete(index: number, list: DocumentList) {

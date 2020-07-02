@@ -15,8 +15,15 @@
                     </button>
                 </div>
                 <div v-else class="display-mode">
-                    <p class="displayed-value" v-if="value">{{value}}</p>
-                    <p class="displayed-value" v-else>{{ placeholder }}</p>
+                    <template v-if="displayValueAs === 'button'">
+                        <button type="button" class="button button-small button-text displayed-value" @click="onDisplayedValueClick">{{ value }}</button>
+                    </template>
+
+                    <template v-else>
+                        <p class="displayed-value" v-if="value">{{value}}</p>
+                        <p class="displayed-value" v-else>{{ placeholder }}</p>
+                    </template>
+
                     <button type="button" class="button button-small button-text button-icon-only document-list-edit-button" @click="onEditClick">
                         <span class="iconmonstr iconmonstr-buka-pencil"></span> 
                         <span class="text">{{ $t('Edit') }}</span>
@@ -45,6 +52,7 @@
 <script lang="ts">
     import { Component, Prop, Vue } from 'vue-property-decorator';
     import uuid from 'short-uuid';
+    import * as util from 'util';
     import EditableTextfieldChangeEvent from '@/components/editable-textfield-change-event';
 
     @Component
@@ -73,6 +81,9 @@
         @Prop({required: true})
         public value: string | number;
 
+        @Prop({required: false, type: String})
+        public displayValueAs: string;
+
         public id: string;
 
         public constructor() {
@@ -82,6 +93,10 @@
 
         public onCancelClick() {
             this.isEditMode = false;
+        }
+
+        public onDisplayedValueClick() {
+            this.$emit('displayedValueClick', this.value);
         }
 
         public onDeleteClick() {
