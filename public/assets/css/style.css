@@ -902,6 +902,12 @@ input[type=text]:focus {
     width: 100%;
 }
 
+
+#document-lists-view-component .view-submenu .view-submenu-header {
+    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+}
+
 #document-lists-view-component .add-list-form {
     display: flex;
     flex-direction: column;
@@ -939,10 +945,13 @@ input[type=text]:focus {
     align-items: center;
     display: flex;
     font-size: small;
+    height: 32px;
+    height: 2rem;
     justify-content: flex-start;
     margin-bottom: 12px;
     margin-bottom: 0.75rem;
-    padding: 0;
+    padding: 0 0 0 12px;
+    padding: 0 0 0 0.75rem;
 }
 
 #document-lists-view-component .document-lists .document-list:hover {
