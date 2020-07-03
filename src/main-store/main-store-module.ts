@@ -1,4 +1,5 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
+import arraySort from 'array-sort';
 import to from 'await-to-js';
 
 import Author from '@/models/author';

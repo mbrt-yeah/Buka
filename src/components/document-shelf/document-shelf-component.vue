@@ -4,26 +4,26 @@
             <div class="document-shelf-options">
                 <form class="sort-options">
                     <label class="label" for="sort-options">{{ $t('Sort by') }}</label>
-                    <select id="sort-options" v-model="documentSortOptionSelected">
-                        <option v-for="(documentSortOption, index) in documentSortOptions" v-bind:value="documentSortOption" :key="index">{{ $t(`${documentSortOption}`) }}</option>
+                    <select id="sort-options" v-model="documentsSortOptionSelected" @change="onDocumentsSortOptionChange">
+                        <option v-for="(documentsSortOption, index) in documentsSortOptions" v-bind:value="documentsSortOption" :key="index">{{ $t(`${documentsSortOption}`) }}</option>
                     </select>
                 </form>
                 <ul class="display-options">
                     <li class="display-option" >
-                        <button type="button" :class="['button button-small button-text', displayOptionCurrent === 'grid' ? 'active' : '']" @click="onChangeDisplayOptionClick('grid')">
+                        <button type="button" :class="['button button-small button-text', documentListDisplayOption === 'grid' ? 'active' : '']" @click="onDocumentListDisplayOptionClick('grid')">
                             <span class="iconmonstr iconmonstr-buka-grid"></span>
                             {{ $t('Grid') }}
                         </button>
                     </li>
                     <li class="display-option">
-                        <button type="button" :class="['button button-small button-text', displayOptionCurrent === 'list' ? 'active' : '']" @click="onChangeDisplayOptionClick('list')">
+                        <button type="button" :class="['button button-small button-text', documentListDisplayOption === 'list' ? 'active' : '']" @click="onDocumentListDisplayOptionClick('list')">
                             <span class="iconmonstr iconmonstr-buka-list"></span>
                             {{ $t('List') }}
                         </button>
                     </li>
                 </ul>
             </div>
-            <ul :class="`document-shelf ${displayOptionCurrent}`">
+            <ul :class="`document-shelf ${documentListDisplayOption}`">
                 <li 
                     v-for="(document, index) in documents" 
                     :key="document.id" class="document" 
@@ -55,13 +55,14 @@
 </template>
 
 <script lang="ts">
-    import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+    import { Component, Prop, Vue } from 'vue-property-decorator';
     import uuid from 'short-uuid';
 
     import Configuration from '@/configuration';
     import Document from '@/models/document';
-    import DOCUMENT_SHELF_ACTION_TYPE from '@/components/document-shelf/document-shelf-component-action-type';
-    import DOCUMENT_SHELF_MUTATION_TYPE from '@/components/document-shelf/document-shelf-component-mutation-type';
+    import DOCUMENT_SHELF_COMPONENT_ACTION_TYPE from '@/components/document-shelf/document-shelf-component-action-type';
+    import DOCUMENT_SHELF_COMPONENT_GETTER_TYPE from '@/components/document-shelf/document-shelf-component-getter-type';
+    import DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE from '@/components/document-shelf/document-shelf-component-mutation-type';
     import DocumentPreviewComponent from '@/components/document-preview-component.vue';
     import DocumentShelfComponentStoreModule from '@/components/document-shelf/document-shelf-component-module';
     import LIST_DISPLAY_OPTION from '@/constants/list-display-option';
@@ -80,10 +81,10 @@
 
         public id: string;
 
-        public displayOptionCurrent: LIST_DISPLAY_OPTION;
         public documentFocusedIndex: number | null;
-        public documentSortOptions: string[];
-        public documentSortOptionSelected: string;
+        public documentListDisplayOption: LIST_DISPLAY_OPTION;
+        public documentsSortOptions: string[];
+        public documentsSortOptionSelected: string;
 
         public constructor() {
             super();
@@ -93,56 +94,38 @@
             if ( !this.$store.hasModule(this.id) ) {
                 this.$store.registerModule(this.id, DocumentShelfComponentStoreModule);
             }
-            
-            this.$store.commit(DOCUMENT_SHELF_MUTATION_TYPE.SET_DOCUMENTS, this.documents);
 
-            if (this.$store.state[this.id].documentFocusedIndex) {
-                this.documentFocusedIndex = this.$store.state[this.id].documentFocusedIndex;
-            } else {
-                this.documentFocusedIndex = null;
-            }
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENTS, this.documents);
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SORT_DOCUMENTS);
 
-            if (this.$store.state[this.id].documentListDisplayOption) {
-                this.displayOptionCurrent = this.$store.state[this.id].documentListDisplayOption;
-            } else {
-                this.displayOptionCurrent = Configuration.instance().documentListDisplay.displayOptionDefault;
-            }
-
-            this.documentSortOptions = Configuration.instance().documentSorting.sortOptions;
-
-            if (this.$store.state[this.id].documentSortOptionSelected) {
-                this.documentSortOptionSelected = this.$store.state[this.id].documentSortOptionSelected;
-            } else {
-                this.documentSortOptionSelected = Configuration.instance().documentSorting.sortOptionDefault;
-            }
+            this.documentFocusedIndex = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_FOCUSED_INDEX] || null;
+            this.documentListDisplayOption = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_LIST_DISPLAY_OPTION] || Configuration.instance().documentListDisplay.displayOptionDefault;
+            this.documentsSortOptions = Configuration.instance().documentSorting.sortOptions;
+            this.documentsSortOptionSelected = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENTS_SORT_OPTION_SELECTED] || Configuration.instance().documentSorting.sortOptionDefault;
         }
 
-        public onChangeDisplayOptionClick(displayOption: LIST_DISPLAY_OPTION) {
-            this.$store.commit(DOCUMENT_SHELF_MUTATION_TYPE.SET_DOCUMENT_LIST_DISPLAY_OPTION, displayOption);
-            this.displayOptionCurrent = this.$store.state[this.id].documentListDisplayOption;
+        public onDocumentListDisplayOptionClick(documentListDisplayOption: LIST_DISPLAY_OPTION) {
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENT_LIST_DISPLAY_OPTION, documentListDisplayOption);
+            this.documentListDisplayOption = documentListDisplayOption
         }
 
         public onDocumentClick(index: number) {
-            this.$store.commit(DOCUMENT_SHELF_MUTATION_TYPE.SET_DOCUMENT_FOCUSED_INDEX, index);
-            this.documentFocusedIndex = this.$store.state[this.id].documentFocusedIndex;
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENT_FOCUSED_INDEX, index);
+            this.documentFocusedIndex = index;
         }
 
         public onDocumentDelete(payload: any) {
             this.$emit('documentDelete', payload);
         }
 
+        public onDocumentsSortOptionChange() {
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENTS_SORT_OPTION_SELECTED, this.documentsSortOptionSelected);
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SORT_DOCUMENTS);
+        }
+
         public onDocumentUpdate(payload: any) {
             this.$emit('documentUpdate', payload);
         }
-
-        @Watch('documentSortOptionSelected')
-        public onSortOptionChange(sortOption: string) {
-            this.$store.commit(DOCUMENT_SHELF_MUTATION_TYPE.SET_DOCUMENT_SORT_OPTION_SELECTED, sortOption);
-            this.documentSortOptionSelected = this.$store.state[this.id].documentSortOptionSelected;
-            this.$store.commit(DOCUMENT_SHELF_MUTATION_TYPE.SORT_DOCUMENTS, sortOption);
-        }
-
-        
     }
 </script>
 
