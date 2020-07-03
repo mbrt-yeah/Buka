@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-    import { Component, Prop, Vue } from 'vue-property-decorator';
+    import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
     import uuid from 'short-uuid';
 
     import Configuration from '@/configuration';
@@ -98,7 +98,7 @@
             this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENTS, this.documents);
             this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SORT_DOCUMENTS);
 
-            this.documentFocusedIndex = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_FOCUSED_INDEX] || null;
+            this.documentFocusedIndex = null;
             this.documentListDisplayOption = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_LIST_DISPLAY_OPTION] || Configuration.instance().documentListDisplay.displayOptionDefault;
             this.documentsSortOptions = Configuration.instance().documentSorting.sortOptions;
             this.documentsSortOptionSelected = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENTS_SORT_OPTION_SELECTED] || Configuration.instance().documentSorting.sortOptionDefault;
@@ -110,12 +110,16 @@
         }
 
         public onDocumentClick(index: number) {
-            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENT_FOCUSED_INDEX, index);
             this.documentFocusedIndex = index;
         }
 
         public onDocumentDelete(payload: any) {
             this.$emit('documentDelete', payload);
+        }
+
+        @Watch('documents')
+        public onDocumentsChange() {
+            this.documentFocusedIndex = null;
         }
 
         public onDocumentsSortOptionChange() {

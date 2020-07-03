@@ -9,17 +9,12 @@ import LIST_DISPLAY_OPTION from '@/constants/list-display-option';
 
 @Module
 export default class DocumentShelfComponentStoreModule extends VuexModule {
-    public documentFocusedIndex: number;
     public documentListDisplayOption: LIST_DISPLAY_OPTION = Configuration.instance().documentListDisplay.displayOptionDefault;
     public documents: Document[] = [];
     public documentsSortOptionSelected: string = Configuration.instance().documentSorting.sortOptionDefault;;
 
-    get [DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_FOCUSED_INDEX](): number {
-        return this.documentFocusedIndex;
-    }
-
-    get [DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_LIST_DISPLAY_OPTION](): number {
-        return this.documentFocusedIndex;
+    get [DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_LIST_DISPLAY_OPTION](): LIST_DISPLAY_OPTION {
+        return this.documentListDisplayOption;
     }
 
     get [DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENTS](): Document[] {
@@ -28,11 +23,6 @@ export default class DocumentShelfComponentStoreModule extends VuexModule {
 
     get [DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENTS_SORT_OPTION_SELECTED](): string {
         return this.documentsSortOptionSelected;
-    }
-
-    @Mutation
-    public [DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENT_FOCUSED_INDEX](documentFocusedIndex: number) {
-        this.documentFocusedIndex = documentFocusedIndex;
     }
 
     @Mutation
