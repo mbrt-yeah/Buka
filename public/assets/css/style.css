@@ -945,6 +945,7 @@ input[type=text]:focus {
     padding: 0 0 0 0.75rem;
 }
 
+#document-lists-view-component .document-lists .document-list.selected,
 #document-lists-view-component .document-lists .document-list:hover {
     border-left: 3px solid #4169e1;
     padding-left: 9px;

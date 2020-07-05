@@ -1,80 +1,83 @@
-import { UpdateOptions } from 'nedb';
 import { plainToClass } from '@marcj/marshal';
 
 import Document from '@/models/document';
 import Database from '@/database';
 
-
 export default class DocumentRepository {
-    private static db: Database = Database.instance();
-
     public static create(document: Document): Promise<Document> {
         return new Promise((resolve, reject) => {
-            this.db.documents.insert(document, (error: Error, documentCreated: Document) => {
-                if (error) {
-                    return reject(error);
-                }
+            const documentCreated = Database.instance().getCollection<Document>('documents').insertOne(document);
 
-                return resolve( plainToClass(Document, documentCreated) );
-            });
+            if (!documentCreated) {
+                return reject( new Error('[DocumentRepository] Something went wrong') );
+            }
+
+            return resolve( plainToClass(Document, documentCreated) );
         });
     }
 
-    public static read(id: string): Promise<Document> {
+    public static async createMany(documents: Document[]): Promise<Document[]> {
         return new Promise((resolve, reject) => {
-            this.db.documents.findOne({ _id: id }, (error: Error, document: Document) => {
-                if (error) {
-                    return reject(error);
-                }
+            const documentsCreated = Database.instance().getCollection<Document>('documents').insert(documents);
 
-                return resolve( plainToClass(Document, document) );
-            });
+            if (!documentsCreated) {
+                return reject( new Error('[Document Repository] Something went wrong') );
+            }
+
+            const finalDocuments: Document[] = [];
+
+            for (const document of documentsCreated) {
+                finalDocuments.push( plainToClass(Document, document) );
+            }
+
+            return resolve(finalDocuments);
         });
     }
 
-    public static readAll(): Promise<Document[]> {
+    public static async read(id: string): Promise<Document> {
         return new Promise((resolve, reject) => {
-            this.db.documents.find({}, (error: Error, documents: Document[]) => {
-                if (error) {
-                    return reject(error);
-                }
+            const document = Database.instance().getCollection<Document>('documents').findOne({ 'id' : { '$eq' : id } });
 
-                const finalDocuments: Document[] = [];
+            if (!document) {
+                return resolve();
+            }
 
-                for (const document of documents) {
-                    finalDocuments.push( plainToClass(Document, document) );
-                }
-
-                return resolve(finalDocuments);
-            });
+            return resolve( plainToClass(Document, document) );
         });
     }
 
-    public static update(document: Document, options: UpdateOptions = {}): Promise<number> {
-        const optionsDefault: UpdateOptions = {};
-        const finalOptions: UpdateOptions = Object.assign(optionsDefault, options);
-
+    public static async readAll(): Promise<Document[]> {
         return new Promise((resolve, reject) => {
+            const documents = Database.instance().getCollection<Document>('documents').find();
 
-            this.db.documents.update({ id: document.id }, document, finalOptions, (error: Error, numberOfUpdated: number, upsert: boolean) => {
-                if (error) {
-                    return reject(error);
-                }
+            if (!documents) {
+                return reject( new Error('[DocumentRepository] Something went wrong') );
+            }
 
-                return resolve(numberOfUpdated);
-            });
+            const finalDocuments: Document[] = [];
+
+            for (const document of documents) {
+                finalDocuments.push( plainToClass(Document, document) );
+            }
+
+            resolve(finalDocuments);
         });
     }
 
-    public static delete(id: string): Promise<number> {
+    public static update(documentUpdated: Document): Promise<Document> {
         return new Promise((resolve, reject) => {
-            this.db.documents.remove({ id: id }, (error: Error, numberOfDeleted: number) => {
-                if (error) {
-                    return reject(error);
-                }
-
-                return resolve(numberOfDeleted);
+            Database.instance().getCollection<Document>('documents').findAndUpdate({ 'id' : { '$eq' : documentUpdated.id } }, (documentInDB: Document) => {
+                return Object.assign(documentInDB, documentUpdated);
             });
+
+            resolve(documentUpdated);
+        });
+    }
+
+    public static delete(documentToRemove: Document): Promise<Document> {
+        return new Promise((resolve, reject) => {
+            Database.instance().getCollection<Document>('documents').findAndRemove({ 'id' : { '$eq' : documentToRemove.id } });
+            return resolve(documentToRemove);
         });
     }
 }

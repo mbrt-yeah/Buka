@@ -46,6 +46,7 @@
     import MAIN_STORE_ACTION_TYPE from '@/main-store/main-store-action-type';
     import MAIN_STORE_GETTER_TYPE from '@/main-store/main-store-getter-type';
     import MAIN_STORE_MUTATION_TYPE from '@/main-store/main-store-mutation-type';
+    import NotifictionService from '@/services/notification-service';
 
     @Component({
         components: {
@@ -67,7 +68,6 @@
 
         public async mounted(): Promise<void> {
             await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
-
             this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
             this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
             this.facetValuesSelected = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACET_VALUES_SELECTED];
@@ -78,9 +78,10 @@
             const document: Document = payload[1];
 
             await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.DELETE_DOCUMENT, document);
-            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
 
-            this.$store.commit(MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS, this.documents);
+            NotifictionService.success(`Document deleted`);
+
+            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
             this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
         }
 
@@ -89,9 +90,10 @@
             const document: Document = payload[1];
 
             await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.UPDATE_DOCUMENT, document);
-            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
 
-            this.$store.commit(MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS, this.documents);
+            NotifictionService.success(`Document updated`);
+
+            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
             this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
         }
 

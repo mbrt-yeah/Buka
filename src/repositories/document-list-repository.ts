@@ -1,81 +1,65 @@
-import { UpdateOptions } from 'nedb';
 import { plainToClass } from '@marcj/marshal';
 
 import DocumentList from '@/models/document-list';
 import Database from '@/database';
 
 export default class DocumentListRepository {
-    private static db: Database = Database.instance();
-
-    public static create(documentList: DocumentList): Promise<DocumentList> {
+    public static async create(documentList: DocumentList): Promise<DocumentList> {
         return new Promise((resolve, reject) => {
-            this.db.documentLists.insert(documentList, (error: Error, documentListCreated: DocumentList) => {
-                if (error) {
-                    return reject(error);
-                }
+            const documentListCreated = Database.instance().getCollection<DocumentList>('document-lists').insertOne(documentList);
 
-                return resolve( plainToClass(DocumentList, documentListCreated) );
-            });
+            if (!documentListCreated) {
+                return reject( new Error('[DocumentListRepository] Something went wrong') );
+            }
+
+            return resolve( plainToClass(DocumentList, documentListCreated) );
         });
     }
 
-    public static read(id: string): Promise<DocumentList> {
+    public static async read(id: string): Promise<DocumentList> {
         return new Promise((resolve, reject) => {
-            this.db.documentLists.findOne({ _id: id }, (error: Error, documentList: DocumentList) => {
-                if (error) {
-                    return reject(error);
-                }
+            const documentList = Database.instance().getCollection<DocumentList>('document-lists').findOne({ 'id' : { '$eq' : id } });
 
-                return resolve( plainToClass(DocumentList, documentList) );
-            });
+            if (!documentList) {
+                return resolve();
+            }
+
+            return resolve( plainToClass(DocumentList, documentList) );
         });
     }
 
     public static readAll(): Promise<DocumentList[]> {
         return new Promise((resolve, reject) => {
-            this.db.documentLists.find({}, (error: Error, documentLists: DocumentList[]) => {
-                if (error) {
-                    return reject(error);
-                }
+            const documentLists = Database.instance().getCollection<DocumentList>('document-lists').find();
 
-                const finalDocumentLists: DocumentList[] = [];
+            if (!documentLists) {
+                return reject( new Error('[DocumentListRepository] Something went wrong') );
+            }
 
-                for (const documentList of documentLists) {
-                    finalDocumentLists.push( plainToClass(DocumentList, documentList) );
-                }
+            const finalDocumentLists: DocumentList[] = [];
 
-                return resolve(finalDocumentLists);
-            });
+            for (const documentList of documentLists) {
+                finalDocumentLists.push( plainToClass(DocumentList, documentList) );
+            }
+
+            return resolve(finalDocumentLists);
         });
     }
 
-    public static update(documentList: DocumentList, options: UpdateOptions = {}): Promise<number> {
-        const optionsDefault: UpdateOptions = {};
-        const finalOptions: UpdateOptions = Object.assign(optionsDefault, options);
-
+    public static update(documentListUpdated: DocumentList): Promise<DocumentList> {
         return new Promise((resolve, reject) => {
+            Database.instance().getCollection<DocumentList>('document-lists').findAndUpdate({ 'id' : { '$eq' : documentListUpdated.id } }, (documentListInDB: DocumentList) => {
+                return Object.assign(documentListInDB, documentListUpdated);
+            });
 
-            const updateCallback = (error: Error, numberOfUpdated: number, upsert: boolean) => {
-                if (error) {
-                    return reject(error);
-                }
-
-                return resolve(numberOfUpdated);
-            };
-
-            this.db.documentLists.update({ id: documentList.id }, documentList, finalOptions, updateCallback);
+            resolve(documentListUpdated);
         });
     }
 
-    public static delete(id: string): Promise<number> {
+    public static delete(documentListToRemove: DocumentList): Promise<DocumentList> {
         return new Promise((resolve, reject) => {
-            this.db.documentLists.remove({ _id: id }, (error: Error, numberOfDeleted: number) => {
-                if (error) {
-                    return reject(error);
-                }
-
-                return resolve(numberOfDeleted);
-            });
+            Database.instance().getCollection<DocumentList>('document-lists').findAndRemove({ 'id' : { '$eq' : documentListToRemove.id } });
+            return resolve(documentListToRemove);
         });
     }
 }

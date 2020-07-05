@@ -1,5 +1,4 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import arraySort from 'array-sort';
 import to from 'await-to-js';
 
 import Author from '@/models/author';
@@ -35,17 +34,17 @@ export default class MainStoreModule extends VuexModule {
     }
 
     @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.ADD_FACET_VALUE_SELECTED](facetValue: FacetValue) {
+    public [MAIN_STORE_MUTATION_TYPE.ADD_FACET_VALUE_SELECTED](facetValue: FacetValue): void {
         this.facetValuesSelected.push(facetValue);
     }
 
     @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS](documents: Document[]) {
+    public [MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS](documents: Document[]): void {
         this.facets = FacetsCreator.init(documents);
     }
 
     @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.REMOVE_FACET_VALUE_SELECTED](index: number) {
+    public [MAIN_STORE_MUTATION_TYPE.REMOVE_FACET_VALUE_SELECTED](index: number): void {
         if ( index < 0 || index >= this.facetValuesSelected.length ) {
             return;
         }
@@ -54,12 +53,65 @@ export default class MainStoreModule extends VuexModule {
     }
 
     @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.SET_DOCUMENTS](documents: Document[]) {
+    public [MAIN_STORE_MUTATION_TYPE.SET_DOCUMENTS](documents: Document[]): void {
         this.documents = documents;
     }
 
     @Action
-    public async [MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS]() {
+    public async [MAIN_STORE_ACTION_TYPE.CREATE_DOCUMENT](document: Document): Promise<Document> {
+        const [createDocumentError, createDocumentResult] = await to( DocumentRepository.create(document) );
+
+        if (createDocumentResult) {
+            throw createDocumentResult;
+        }
+
+        if (!createDocumentResult) {
+            throw new Error('createDocumentResult undefined')
+        }
+
+        return createDocumentResult;
+    }
+
+    @Action
+    public async [MAIN_STORE_ACTION_TYPE.CREATE_DOCUMENTS](documents: Document[]): Promise<Document[]> {
+        const [createDocumentsError, createDocumentsResult] = await to<Document[]>( DocumentRepository.createMany(documents) );
+
+        if (createDocumentsError) {
+            throw createDocumentsError;
+        }
+
+        if (!createDocumentsResult) {
+            throw new Error('createDocumentsResult undefined')
+        }
+
+        return createDocumentsResult;
+    }
+
+    @Action
+    public async [MAIN_STORE_ACTION_TYPE.DELETE_DOCUMENT](documentToDelete: Document): Promise<Document> {
+        const [deleteError, deleteResult] = await to<Document>( DocumentRepository.delete(documentToDelete) );
+
+        if (deleteError) {
+            // TODO figure out what to do here
+            throw deleteError;
+        }
+
+        if (deleteResult === undefined) {
+            // TODO figure out what to do here
+            throw new Error('deleteResult undefined');
+        }
+
+        if (documentToDelete.coverImage.filePath) {
+            deleteFile(documentToDelete.coverImage.filePath);
+        }
+
+        await this.context.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
+
+        return deleteResult;
+    }
+
+    @Action
+    public async [MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS](): Promise<Document[]> {
         let [readAllError, readAllResult] = await to<Document[]>( DocumentRepository.readAll() );
 
         if (readAllError) {
@@ -100,35 +152,8 @@ export default class MainStoreModule extends VuexModule {
     }
 
     @Action
-    public async [MAIN_STORE_ACTION_TYPE.DELETE_DOCUMENT](documentToDelete: Document) {
-        const [deleteError, deleteResult] = await to<number>( DocumentRepository.delete(documentToDelete.id) );
-
-        if (deleteError) {
-            // TODO figure out what to do here
-            throw deleteError;
-        }
-
-        if (deleteResult === undefined) {
-            // TODO figure out what to do here
-            throw new Error('deleteResult undefined');
-        }
-
-        const documentsNew = this.documents.filter((document: Document) => {
-            return document.id !== documentToDelete.id;
-        });
-
-        if (documentToDelete.coverImage.filePath) {
-            deleteFile(documentToDelete.coverImage.filePath);
-        }
-
-        this.context.commit(MAIN_STORE_MUTATION_TYPE.SET_DOCUMENTS, documentsNew);
-
-        return deleteResult;
-    }
-
-    @Action
-    public async [MAIN_STORE_ACTION_TYPE.UPDATE_DOCUMENT](document: Document): Promise<number> {
-        const [updateError, updateResult] = await to<number>( DocumentRepository.update(document) );
+    public async [MAIN_STORE_ACTION_TYPE.UPDATE_DOCUMENT](document: Document): Promise<Document> {
+        const [updateError, updateResult] = await to<Document>( DocumentRepository.update(document) );
 
         if (updateError) {
             // TODO figure out what to do here
@@ -140,7 +165,7 @@ export default class MainStoreModule extends VuexModule {
             throw new Error('updateResult undefined');
         }
 
-        this.context.commit(MAIN_STORE_MUTATION_TYPE.NOOP);
+        this.context.commit(MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS, this.documents);
 
         return updateResult;
     }
