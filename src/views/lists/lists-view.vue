@@ -41,13 +41,11 @@
         </div>
         <div class="view-content" >
             <template v-if="listFocusedIndex >= 0">
-                <h2>{{lists[listFocusedIndex].name}}</h2>
-                <!--
+                <h2 class="list-name">{{lists[listFocusedIndex].name}}</h2>
                 <document-shelf-component
-                    v-bind:documents="$store.state.MainViewStoreModule.documents"
+                    v-bind:documents="listFocusedDocuments"
                     v-bind:showDocumentPreview="true"
                 />
-                -->
             </template>
         </div>
     </div>
@@ -67,6 +65,7 @@
     import LISTS_VIEW_GETTER_TYPE from '@/views/lists/lists-view-getter-type';
     import NotifcationService from '@/services/notification-service';
     import SearchDropdownComponent from '@/components/search-dropdown-component.vue';
+import LISTS_VIEW_MUTATION_TYPE from './lists-view-mutation-type';
 
     @Component({
         components: {
@@ -78,18 +77,20 @@
     })
     export default class ListsView extends Vue {
         public addNewListMode: boolean;
-        public lists: DocumentList[];
+        public isEditMode: boolean;
+        public listFocusedDocuments: Document[];
         public listFocusedIndex: number;
         public listNewName: string;
-        public isEditMode: boolean;
+        public lists: DocumentList[];
 
         public constructor() {
             super();
             this.addNewListMode = false;
             this.isEditMode = false;
+            this.listFocusedDocuments = [];
+            this.listFocusedIndex = -1;
             this.listNewName = '';
             this.lists = [];
-            this.listFocusedIndex = -1;
         }
 
         public async mounted() {
@@ -122,7 +123,11 @@
         }
 
         public async onListNameClick(index: number, event: string) {
-            this.listFocusedIndex = index;
+            this.$store.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_INDEX, index);
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LIST_DOCUMENTS, index);
+
+            this.listFocusedDocuments = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_DOCUMENTS];
+            this.listFocusedIndex = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_INDEX];
         }
 
         public async onListNewSaveClick() {

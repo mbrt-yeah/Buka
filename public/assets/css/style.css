@@ -899,6 +899,15 @@ input[type=text]:focus {
     margin-bottom: 0.75rem;
 }
 
+#document-lists-view-component .view-content {
+    flex-direction: column;
+}
+
+#document-lists-view-component .view-content .list-name {
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+}
+
 #document-lists-view-component .add-list-form {
     display: flex;
     flex-direction: column;
