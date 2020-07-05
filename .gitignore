@@ -11,3 +11,5 @@ public/cover-images
 
 #Electron-builder output
 /dist_electron
+
+/buka.db

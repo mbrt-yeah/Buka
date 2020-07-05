@@ -128,6 +128,8 @@
                 return;
             }
 
+            const documentsNew: Document[] = [];
+
             for (const acceptedFile of acceptedFiles) {
                 const documentHandler = new NewDocumentHandlerPDF(acceptedFile);
                 const [handlerError, handlerResult] = await to<Document>( documentHandler.init() );
@@ -140,18 +142,12 @@
                     throw new Error('handlerResult undefined');
                 }
 
-                const [createError, createResult] = await to<Document>( DocumentRepository.create(handlerResult) );
-
-                if (createError) {
-                    throw createError;
-                }
-
-                if (!createResult) {
-                    throw new Error('createResult undefined');
-                }
-
-                this.documents.push(createResult);
+                documentsNew.push(handlerResult);
             }
+
+            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.CREATE_DOCUMENTS, documentsNew);
+
+            this.documents = documentsNew;
 
             NotifictionService.success(`${acceptedFilesTotal} documents saved`);
 

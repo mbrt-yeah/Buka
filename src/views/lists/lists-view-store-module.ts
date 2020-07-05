@@ -17,12 +17,12 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.ADD_LIST](documentList: DocumentList) {
+    public [LISTS_VIEW_MUTATION_TYPE.ADD_LIST](documentList: DocumentList): void {
         this._documentLists.push(documentList);
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.REMOVE_LIST](index: number) {
+    public [LISTS_VIEW_MUTATION_TYPE.REMOVE_LIST](index: number): void {
         if ( index < 0 || index >= this._documentLists.length ) {
             return;
         }
@@ -31,7 +31,7 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST](documentListNew: DocumentList) {
+    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST](documentListNew: DocumentList): void {
         let i = 0;
         const l = this._documentLists.length;
 
@@ -46,14 +46,14 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.SET_LISTS](documentLists: DocumentList[]) {
+    public [LISTS_VIEW_MUTATION_TYPE.SET_LISTS](documentLists: DocumentList[]): void {
         this._documentLists = documentLists;
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.CREATE_LIST](documentList: DocumentList) {
+    public async [LISTS_VIEW_ACTION_TYPE.CREATE_LIST](documentList: DocumentList): Promise<DocumentList> {
         if (!documentList.name) {
-            return;
+            throw new Error('dcumentList to be created has no name');
         }
 
         const [createError, createResult] = await to<DocumentList>( DocumentListRepository.create(documentList) );
@@ -63,7 +63,7 @@ export default class ListsViewStoreModule extends VuexModule {
         }
 
         if (!createResult) {
-            return [];
+            throw new Error('createResult is undefined');
         }
 
         this.context.commit(LISTS_VIEW_MUTATION_TYPE.ADD_LIST, createResult);
@@ -72,21 +72,21 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.DELETE_LIST](index: number) {
+    public async [LISTS_VIEW_ACTION_TYPE.DELETE_LIST](index: number): Promise<DocumentList> {
         const listToDelete = this._documentLists[index];
 
         if (!listToDelete) {
-            return;
+            throw new Error('No list to delete found');
         }
 
-        const [deleteError, deleteResult] = await to<number>( DocumentListRepository.delete(listToDelete._id) );
+        const [deleteError, deleteResult] = await to<DocumentList>( DocumentListRepository.delete(listToDelete) );
 
         if (deleteError) {
             throw deleteError;
         }
 
-        if (deleteResult === undefined) {
-            return;
+        if (!deleteResult) {
+            throw new Error('deleteResult is undefined');
         }
 
         this.context.commit(LISTS_VIEW_MUTATION_TYPE.REMOVE_LIST, index);
@@ -95,7 +95,7 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS]() {
+    public async [LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS](): Promise<DocumentList[]> {
         const [readAllError, readAllResult] = await to<DocumentList[]>( DocumentListRepository.readAll() );
 
         if (readAllError) {
@@ -112,15 +112,15 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentList: DocumentList) {
-        const [updateError, updateResult] = await to<number>( DocumentListRepository.update(documentList) );
+    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentList: DocumentList): Promise<DocumentList> {
+        const [updateError, updateResult] = await to<DocumentList>( DocumentListRepository.update(documentList) );
 
         if (updateError) {
             throw updateError;
         }
 
-        if (updateResult === undefined) {
-            return;
+        if (!updateResult) {
+            throw new Error('updateResult is undefined');
         }
 
         this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST, documentList);
