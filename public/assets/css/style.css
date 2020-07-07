@@ -972,19 +972,22 @@ input[type=text]:focus {
     margin-right: 0.75rem;
 }
 
-#document-lists-view-component .document-lists .document-list .document-list-edit-button,
-#document-lists-view-component .document-lists .document-list .document-list-delete-button {
+#document-lists-view-component .document-lists .document-list .add-button,
+#document-lists-view-component .document-lists .document-list .edit-button,
+#document-lists-view-component .document-lists .document-list .delete-button {
     display: none;
 }
 
-#document-lists-view-component .document-lists .document-list:hover .document-list-edit-button,
-#document-lists-view-component .document-lists .document-list:hover .document-list-delete-button {
+#document-lists-view-component .document-lists .document-list:hover .add-button,
+#document-lists-view-component .document-lists .document-list:hover .edit-button,
+#document-lists-view-component .document-lists .document-list:hover .delete-button {
     display: block;
 }
 
-#document-lists-view-component .document-lists .document-list .document-list-edit-button {
-    margin-right: 12px;
-    margin-right: 0.75rem;
+#document-lists-view-component .document-lists .document-list .add-button,
+#document-lists-view-component .document-lists .document-list .edit-button {
+    margin-right: 16px;
+    margin-right: 1rem;
 }
 
 

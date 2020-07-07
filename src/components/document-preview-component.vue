@@ -2,6 +2,12 @@
     <div class="document-preview-component">
         <template v-if="document">
             <div class="options">
+                <div class="add-to-list-option option" v-if="!isDeleteMode && !isEditMode">
+                    <button type="button" class="button button-small button-text button-icon-right" @click="onAddToListClick">
+                        <span class="iconmonstr iconmonstr-buka-plus"></span>
+                        <span class="text">{{ $t('Add to List') }}</span>
+                    </button>
+                </div>
                 <div class="edit-option option" v-if="!isDeleteMode">
                     <div v-if="isEditMode" class="edit-mode-on">
                         <button type="button" class="button button-small button-text button-positive" @click="onSaveClick">
@@ -54,6 +60,9 @@
                     />
                 </div>
             </div>
+            <modal name="data-list-document-lists">
+                <data-list :type="'DocumentList'" v-on:dataListEntryClicked="onAddToListSaveClick" />
+            </modal>
         </template>
     </div>
 </template>
@@ -62,13 +71,18 @@
     import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
     import to from 'await-to-js';
 
+    import DataList from '@/components/data-list-component.vue';
     import Document from '@/models/document';
+    import DocumentList from '@/models/document-list';
     import DocumentRepository from '@/repositories/document-repository';
     import EditableMetadataForm from '@/components/editable-metadata-form-component.vue'
+    import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
     import Metadata from '@/models/metadata';
+    import NotifcationService from '@/services/notification-service';
 
     @Component({
         components: {
+            DataList,
             EditableMetadataForm
         }
     })
@@ -93,6 +107,24 @@
             this.isEditMode = false;
         }
 
+        public onAddToListClick() {
+            this.$modal.show('data-list-document-lists');
+        }
+
+        public async onAddToListSaveClick(documentList: DocumentList) {
+            this.$modal.hide('data-list-document-lists');
+
+            if (!this.document) {
+                return;
+            }
+
+            documentList.documentIds.push(this.document.id);
+
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_LIST, documentList);
+
+            NotifcationService.success(`Document &raquo;${this.document.metadata.title}&laquo; has been added to list &raquo;${documentList.name}&laquo;`);
+        }
+
         public onCancelClick(): void {
             this.isEditMode = false;
         }
@@ -105,6 +137,8 @@
             this.isDeleteMode = true;
             
         }
+
+        
 
         public async onDeleteYesClick(): Promise<void> {
             this.$emit('documentDelete', this.document);

@@ -24,11 +24,15 @@
                         <p class="displayed-value" v-else>{{ placeholder }}</p>
                     </template>
 
-                    <button type="button" class="button button-small button-text button-icon-only document-list-edit-button" @click="onEditClick">
+                    <button type="button" class="button button-text button-icon-only add-button" @click="onAddClick">
+                        <span class="iconmonstr iconmonstr-buka-plus"></span>
+                        <span class="text">{{ $t('Add') }}</span>
+                    </button>
+                    <button type="button" class="button button-small button-text button-icon-only edit-button" @click="onEditClick">
                         <span class="iconmonstr iconmonstr-buka-pencil"></span> 
                         <span class="text">{{ $t('Edit') }}</span>
                     </button>
-                    <button type="button" class="button button-small button-icon-only button-text button-negative document-list-delete-button" @click="onDeleteClick">
+                    <button type="button" class="button button-small button-icon-only button-text button-negative delete-button" @click="onDeleteClick">
                         <span class="iconmonstr iconmonstr-buka-trash-can"></span>
                         <span class="text">{{ $t('Delete') }}</span>
                     </button>
@@ -89,6 +93,10 @@
         public constructor() {
             super();
             this.id = uuid.generate();
+        }
+
+        public onAddClick() {
+            this.$emit('add');
         }
 
         public onCancelClick() {

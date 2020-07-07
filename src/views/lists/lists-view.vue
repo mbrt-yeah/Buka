@@ -23,7 +23,8 @@
                 <li 
                     v-for="(list, index) of lists" 
                     v-bind:key="list.id" 
-                    v-bind:class="['document-list', (index === listFocusedIndex) ? 'selected' : '']">
+                    v-bind:class="['document-list', (index === listFocusedIndex) ? 'selected' : '']"
+                >
                     <editable-textfield
                         v-bind:customClasses="'buka'"
                         v-bind:hideLabel="true"
@@ -33,8 +34,10 @@
                         v-bind:value="list.name"
                         v-bind:displayValueAs="`button`"
                         v-on:displayedValueClick="onListNameClick(index, $event)"
+                        v-on:add="onDocumentAdd(index)"
                         v-on:change="onListNameChange(index, $event)"
                         v-on:delete="onListDelete(index, list)"
+
                     />
                 </li>
             </ul>
@@ -48,14 +51,17 @@
                 />
             </template>
         </div>
+        <modal name="data-list-documents">
+            <data-list />
+        </modal>
     </div>
 </template>
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import DataList from '@/components/data-list-component.vue';
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
-    import DocumentListEntry from '@/models/document-list-entry';
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
     import EditableTextfield from '@/components/editable-textfield.vue';
     import EditableTextfieldChangeEvent from '@/components/editable-textfield-change-event.vue';
@@ -63,12 +69,13 @@
     import LabelComponent from '@/components/label-component.vue';
     import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
     import LISTS_VIEW_GETTER_TYPE from '@/views/lists/lists-view-getter-type';
+    import LISTS_VIEW_MUTATION_TYPE from './lists-view-mutation-type';
     import NotifcationService from '@/services/notification-service';
     import SearchDropdownComponent from '@/components/search-dropdown-component.vue';
-import LISTS_VIEW_MUTATION_TYPE from './lists-view-mutation-type';
 
     @Component({
         components: {
+            DataList,
             DocumentShelfComponent,
             EditableTextfield,
             LabelComponent,
@@ -96,6 +103,10 @@ import LISTS_VIEW_MUTATION_TYPE from './lists-view-mutation-type';
         public async mounted() {
             await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS);
             this.lists = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS];
+        }
+
+        public onDocumentAdd(index: number) {
+            this.$modal.show('data-list-documents');
         }
 
         public onListAddNewClick() {
