@@ -1,11 +1,28 @@
 <template>
     <div class="data-list-component">
-        <div class="data-list-header">{{type}}</div>
-        <ul class="data-list">
-            <li v-for="(datum, index) of data" v-bind:key="index">
-                <a href="#" @click="onDataListEntryClick(datum)">{{ datum.name }}</a>
-            </li>
-        </ul>
+        <form>
+            <div class="data-list-header">
+                <h2 class="data-list-title">{{type}}</h2>
+                <div class="checkbox checkbox-select-all">
+                    <input type="checkbox" v-bind:name="`checkbox-all`">
+                    <label v-bind:for="`checkbox-all`">Select All</label>
+                </div>
+            </div>
+            <ul class="data-list">
+                <li 
+                    v-for="(datum, index) of data" 
+                    v-bind:key="index"
+                    class="data-list-entry"
+                    @click="onDataListEntryClick(datum)"
+                >
+                    <div class="checkbox label-hidden">
+                        <input type="checkbox" v-bind:name="`checkbox-${index}`">
+                        <label v-bind:for="`checkbox-${index}`">Select Entry {{index}}</label>
+                    </div>
+                    {{ datum.name }}
+                </li>
+            </ul>
+        </form>
     </div>
 </template>
 

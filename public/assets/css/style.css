@@ -65,6 +65,16 @@ input[type=text]:focus {
     background-color: #3b3c6a;
 }
 
+.checkbox {
+    align-items: center;
+    display: flex;
+}
+
+.checkbox.label-hidden label {
+    width: 0;
+    text-indent: -9999px;
+}
+
 
 /**
  * Scrollbars
@@ -100,6 +110,101 @@ input[type=text]:focus {
 }
 
 .tippy-tooltip.buka-theme .tippy-arrow {}
+
+
+/**
+ * Vue-JS-Modal Component
+ */
+
+.vm--overlay {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+.vm--modal {
+    background-color: #252525 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 24px;
+    padding: 1.5rem;
+    overflow-y: scroll !important;
+}
+
+
+/**
+ * Data List Component
+ */
+
+.data-list-component {
+    font-size: smaller;
+}
+
+.data-list-component .checkbox input[type='checkbox'] {
+    -webkit-appearance: none;
+    background-color: #1b1b1b;
+    margin: 0;
+    padding: 12px;
+    padding: 0.75rem;
+    position: relative;
+}
+
+.data-list-component .checkbox input[type='checkbox']:active,
+.data-list-component .checkbox input[type='checkbox']:checked {
+    background-color: #4169e1;
+}
+
+.data-list-component .checkbox input[type='checkbox']:checked::after {
+    color: #ffffff;
+    content: "\e900";
+    font-family: 'iconmonstr-buka';
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.data-list-component .data-list-header {
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+    margin-left: 6px;
+    margin-left: 0.375rem;
+}
+
+.data-list-component .data-list-header .data-list-title {}
+
+.data-list-component .data-list-header .checkbox.checkbox-select-all {
+    margin-top: 24px;
+    margin-top: 1.5rem;
+}
+
+.data-list-component .data-list-header .checkbox.checkbox-select-all input[type='checkbox'] {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.data-list-component .data-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.data-list-component .data-list .data-list-entry {
+    align-items: center;
+    background-color: #333333;
+    display: flex;
+    padding: 6px; 
+    padding: 0.375rem;
+    margin-bottom: 1px;
+    margin-bottom: 0.0625rem;
+}
+
+.data-list-component .data-list .data-list-entry:last-child {
+    margin-bottom: 0;
+}
+
+.data-list-component .data-list .data-list-entry .checkbox label {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
 
 
 /**
@@ -180,32 +285,36 @@ input[type=text]:focus {
     font-family: 'iconmonstr-buka';
 }
 
-.iconmonstr-buka-grid:before {
+.iconmonstr-buka-check-mark:before {
     content: "\e900";
 }
 
-.iconmonstr-buka-list:before {
+.iconmonstr-buka-grid:before {
     content: "\e901";
 }
 
-.iconmonstr-buka-pencil:before {
+.iconmonstr-buka-list:before {
     content: "\e902";
 }
 
-.iconmonstr-buka-plus:before {
-    content: "\e906";
-}
-
-.iconmonstr-buka-save:before {
+.iconmonstr-buka-pencil:before {
     content: "\e903";
 }
 
-.iconmonstr-buka-trash-can:before {
+.iconmonstr-buka-plus:before {
     content: "\e904";
 }
 
-.iconmonstr-buka-x-mark:before {
+.iconmonstr-buka-save:before {
     content: "\e905";
+}
+
+.iconmonstr-buka-trash-can:before {
+    content: "\e906";
+}
+
+.iconmonstr-buka-x-mark:before {
+    content: "\e907";
 }
 
 

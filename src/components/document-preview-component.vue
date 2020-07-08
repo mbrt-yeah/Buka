@@ -60,8 +60,8 @@
                     />
                 </div>
             </div>
-            <modal name="data-list-document-lists">
-                <data-list :type="'DocumentList'" v-on:dataListEntryClicked="onAddToListSaveClick" />
+            <modal v-bind:name="'data-list-document-lists'" v-bind:classes="'buka'">
+                <data-list :type="'DocumentList'" />
             </modal>
         </template>
     </div>
@@ -112,7 +112,7 @@
         }
 
         public async onAddToListSaveClick(documentList: DocumentList) {
-            this.$modal.hide('data-list-document-lists');
+            //this.$modal.hide('data-list-document-lists');
 
             if (!this.document) {
                 return;
