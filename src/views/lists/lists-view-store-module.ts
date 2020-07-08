@@ -158,8 +158,8 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentList: DocumentList): Promise<DocumentList> {
-        const [updateError, updateResult] = await to<DocumentList>( DocumentListRepository.update(documentList) );
+    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_ALL_LIST](documentListsUpdated: DocumentList[]): Promise<DocumentList[]> {
+        const [updateError, updateResult] = await to<DocumentList[]>( DocumentListRepository.updateMany(documentListsUpdated) );
 
         if (updateError) {
             throw updateError;
@@ -169,7 +169,24 @@ export default class ListsViewStoreModule extends VuexModule {
             throw new Error('updateResult is undefined');
         }
 
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST, documentList);
+        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LISTS, updateResult);
+
+        return updateResult;
+    }
+
+    @Action
+    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentListUpdated: DocumentList): Promise<DocumentList> {
+        const [updateError, updateResult] = await to<DocumentList>( DocumentListRepository.update(documentListUpdated) );
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        if (!updateResult) {
+            throw new Error('updateResult is undefined');
+        }
+
+        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST, updateResult);
 
         return updateResult;
     }

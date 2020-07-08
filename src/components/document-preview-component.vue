@@ -61,7 +61,7 @@
                 </div>
             </div>
             <modal v-bind:name="'data-list-document-lists'" v-bind:classes="'buka'">
-                <data-list :type="'DocumentList'" />
+                <data-list v-bind:type="'DocumentList'" v-on:save="onAddToListSave" v-on:cancel="onAddToListCancel" />
             </modal>
         </template>
     </div>
@@ -107,22 +107,30 @@
             this.isEditMode = false;
         }
 
+        public onAddToListCancel() {
+            this.$modal.hide('data-list-document-lists');
+        }
+
         public onAddToListClick() {
             this.$modal.show('data-list-document-lists');
         }
 
-        public async onAddToListSaveClick(documentList: DocumentList) {
-            //this.$modal.hide('data-list-document-lists');
+        public async onAddToListSave(documentLists: DocumentList[]): Promise<void> {
+            this.$modal.hide('data-list-document-lists');
 
-            if (!this.document) {
+            const l = documentLists.length;
+
+             if (!this.document || l  === 0) {
                 return;
             }
 
-            documentList.documentIds.push(this.document.id);
+            for (const documentList of documentLists) {
+               documentList.documentIds.push(this.document.id);
+            }
 
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_LIST, documentList);
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_ALL_LIST, documentLists);
 
-            NotifcationService.success(`Document &raquo;${this.document.metadata.title}&laquo; has been added to list &raquo;${documentList.name}&laquo;`);
+            NotifcationService.success(`Document &raquo;${this.document.metadata.title}&laquo; has been added to &raquo;${l}&laquo; lists.`);
         }
 
         public onCancelClick(): void {
@@ -135,10 +143,7 @@
 
         public async onDeleteClick(): Promise<void> {
             this.isDeleteMode = true;
-            
         }
-
-        
 
         public async onDeleteYesClick(): Promise<void> {
             this.$emit('documentDelete', this.document);

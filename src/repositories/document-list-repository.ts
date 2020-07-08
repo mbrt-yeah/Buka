@@ -56,6 +56,16 @@ export default class DocumentListRepository {
         });
     }
 
+    public static updateMany(documentListsUpdated: DocumentList[]): Promise<DocumentList[]> {
+        const updateOps: Promise<DocumentList>[] = [];
+
+        for (const documentListUpdated of documentListsUpdated) {
+            updateOps.push( this.update(documentListUpdated) );
+        }
+
+        return Promise.all<DocumentList>(updateOps);
+    }
+
     public static delete(documentListToRemove: DocumentList): Promise<DocumentList> {
         return new Promise((resolve, reject) => {
             Database.instance().getCollection<DocumentList>('document-lists').findAndRemove({ 'id' : { '$eq' : documentListToRemove.id } });
