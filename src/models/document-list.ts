@@ -40,6 +40,25 @@ export default class DocumentList {
         return documentIdsAdded;
     }
 
+    public removeDocumentIds(ids: string | string[]): number {
+        ids = arrayfy<string>(ids);
+
+        let documentIdsRemoved: number = 0;
+
+        for (const id of ids) {
+            const index = this.documentIds.indexOf(id);
+
+            if (index === -1) {
+                continue;
+            }
+
+            this.documentIds = this.documentIds.splice(index, 1);
+            documentIdsRemoved++;
+        }
+
+        return documentIdsRemoved;
+    }
+
     public clone(): DocumentList {
         return plainToClass(DocumentList, JSON.parse(JSON.stringify(this)));
     }
