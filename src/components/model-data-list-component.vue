@@ -3,8 +3,8 @@
         <div class="data-list-header">
             <h2 class="data-list-title">{{title}}</h2>
             <div class="checkbox checkbox-select-all" v-if="data.length > 1">
-                <input type="checkbox" value="selectAllData" v-bind:name="`checkbox-all`" @change="onCheckboxAllClick" />
-                <label v-bind:for="`checkbox-all`">Select All</label>
+                <input type="checkbox" value="selectAllData" name="`checkbox-all" id="checkbox-all" @change="onCheckboxAllClick" />
+                <label for="checkbox-all">Select All</label>
             </div>
         </div>
         <template v-if="data.length > 0">

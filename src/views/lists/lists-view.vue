@@ -138,11 +138,32 @@
         }
 
         public async onAddDocumentsSave(documents: Document[]): Promise<void> {
-            if (documents.length === 0) {
+            this.$modal.hide('data-list-documents');
+
+            const l = documents.length;
+            const listFocused = this.lists[this.listFocusedIndex];
+
+            if (!listFocused || l  === 0) {
                 return;
             }
 
-            this.$modal.hide('data-list-documents');
+            const documentIds: string[] = [];
+
+            for (const document of documents) {
+                documentIds.push(document.id);
+            }
+
+            const documentIdsAdded = listFocused.addDocumentIds(documentIds);
+
+            if (documentIdsAdded === 0) {
+                return;
+            }
+
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_LIST, listFocused);
+            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LIST_DOCUMENTS, this.listFocusedIndex);
+            this.listFocusedDocuments = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_DOCUMENTS];
+
+            NotifcationService.success(`${documentIdsAdded} documents have been added to list &raquo;${listFocused.name}&laquo;.`);
         }
 
         public onAddDocumentsCancel(): void {
