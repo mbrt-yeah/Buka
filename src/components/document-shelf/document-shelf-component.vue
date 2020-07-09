@@ -60,6 +60,7 @@
 
     import Configuration from '@/configuration';
     import Document from '@/models/document';
+    import DocumentList from '@/models/document-list';
     import DOCUMENT_SHELF_COMPONENT_ACTION_TYPE from '@/components/document-shelf/document-shelf-component-action-type';
     import DOCUMENT_SHELF_COMPONENT_GETTER_TYPE from '@/components/document-shelf/document-shelf-component-getter-type';
     import DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE from '@/components/document-shelf/document-shelf-component-mutation-type';
@@ -104,6 +105,10 @@
             this.documentsSortOptionSelected = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENTS_SORT_OPTION_SELECTED] || Configuration.instance().documentSorting.sortOptionDefault;
         }
 
+        public onDataListEntryClicked(documentList: DocumentList) {
+            
+        }
+
         public onDocumentListDisplayOptionClick(documentListDisplayOption: LIST_DISPLAY_OPTION) {
             this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENT_LIST_DISPLAY_OPTION, documentListDisplayOption);
             this.documentListDisplayOption = documentListDisplayOption
@@ -113,7 +118,7 @@
             this.documentFocusedIndex = index;
         }
 
-        public onDocumentDelete(payload: any) {
+        public onDocumentDelete(payload: any[]) {
             this.$emit('documentDelete', payload);
         }
 
@@ -127,7 +132,7 @@
             this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SORT_DOCUMENTS);
         }
 
-        public onDocumentUpdate(payload: any) {
+        public onDocumentUpdate(payload: any[]) {
             this.$emit('documentUpdate', payload);
         }
     }

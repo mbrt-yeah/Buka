@@ -17,8 +17,9 @@
                     v-bind:name="propertyName"
                     v-bind:value="formData[propertyName]"
                     v-bind:isEditMode="isEditMode"
-                    v-bind:isStandalone="false"
                     v-bind:placeholder="'-'"
+                    v-bind:showEditButton="false"
+                    v-bind:showDeleteButton="false"
                     @change="onEditableTextFieldChange"
                 />
             </div>

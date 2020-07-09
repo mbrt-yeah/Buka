@@ -64,6 +64,24 @@ export default class DocumentRepository {
         });
     }
 
+    public static async readMany(ids: string[]): Promise<Document[]> {
+        return new Promise((resolve, reject) => {
+            const documents = Database.instance().getCollection<Document>('documents').find({ 'id' : { '$in' : ids } });
+
+            if (!documents) {
+                return reject( new Error('[DocumentRepository] Something went wrong') );
+            }
+
+            const finalDocuments: Document[] = [];
+
+            for (const document of documents) {
+                finalDocuments.push( plainToClass(Document, document) );
+            }
+
+            resolve(finalDocuments);
+        });
+    }
+
     public static update(documentUpdated: Document): Promise<Document> {
         return new Promise((resolve, reject) => {
             Database.instance().getCollection<Document>('documents').findAndUpdate({ 'id' : { '$eq' : documentUpdated.id } }, (documentInDB: Document) => {

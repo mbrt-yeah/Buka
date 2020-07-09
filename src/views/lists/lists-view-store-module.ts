@@ -1,6 +1,9 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import to from 'await-to-js';
 
+import Document from '@/models/document';
+import DocumentRepository from '@/repositories/document-repository';
+
 import DocumentList from '@/models/document-list';
 import DocumentListRepository from '@/repositories/document-list-repository';
 
@@ -10,44 +13,64 @@ import LISTS_VIEW_MUTATION_TYPE from '@/views/lists/lists-view-mutation-type';
 
 @Module
 export default class ListsViewStoreModule extends VuexModule {
-    public _documentLists: DocumentList[] = [];
+    public listFocusedDocuments: Document[] = [];
+    public listFocusedIndex: number = -1;
+    public lists: DocumentList[] = [];
+
+    get [LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_DOCUMENTS](): Document[] {
+        return this.listFocusedDocuments;
+    }
+
+    get [LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_INDEX](): number {
+        return this.listFocusedIndex;
+    }
 
     get [LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS](): DocumentList[] {
-        return this._documentLists;
+        return this.lists;
     }
 
     @Mutation
     public [LISTS_VIEW_MUTATION_TYPE.ADD_LIST](documentList: DocumentList): void {
-        this._documentLists.push(documentList);
+        this.lists.push(documentList);
     }
 
     @Mutation
     public [LISTS_VIEW_MUTATION_TYPE.REMOVE_LIST](index: number): void {
-        if ( index < 0 || index >= this._documentLists.length ) {
+        if ( index < 0 || index >= this.lists.length ) {
             return;
         }
 
-        this._documentLists.splice(index, 1);
+        this.lists.splice(index, 1);
     }
 
     @Mutation
     public [LISTS_VIEW_MUTATION_TYPE.SET_LIST](documentListNew: DocumentList): void {
         let i = 0;
-        const l = this._documentLists.length;
+        const l = this.lists.length;
 
         for (i; i < l; i++) {
-            if (this._documentLists[i]._id === documentListNew._id) {
+            if (this.lists[i]._id === documentListNew._id) {
                 continue;
             }
 
-            this._documentLists[i] = documentListNew;
+            this.lists[i] = documentListNew;
             break;
         }
     }
 
     @Mutation
     public [LISTS_VIEW_MUTATION_TYPE.SET_LISTS](documentLists: DocumentList[]): void {
-        this._documentLists = documentLists;
+        this.lists = documentLists;
+    }
+
+    @Mutation
+    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_DOCUMENTS](listFocusedDocuments: Document[]): void {
+        this.listFocusedDocuments = listFocusedDocuments;
+    }
+
+    @Mutation
+    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_INDEX](listFocusedIndex: number): void {
+        this.listFocusedIndex = listFocusedIndex;
     }
 
     @Action
@@ -73,7 +96,7 @@ export default class ListsViewStoreModule extends VuexModule {
 
     @Action
     public async [LISTS_VIEW_ACTION_TYPE.DELETE_LIST](index: number): Promise<DocumentList> {
-        const listToDelete = this._documentLists[index];
+        const listToDelete = this.lists[index];
 
         if (!listToDelete) {
             throw new Error('No list to delete found');
@@ -112,8 +135,31 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentList: DocumentList): Promise<DocumentList> {
-        const [updateError, updateResult] = await to<DocumentList>( DocumentListRepository.update(documentList) );
+    public async [LISTS_VIEW_ACTION_TYPE.READ_ALL_LIST_DOCUMENTS](documentListIndex: number): Promise<Document[]> {
+        const documentList = this.lists[documentListIndex];
+
+        if (!documentList) {
+            throw new Error(`[ListViewStoreModule] No document list at index position ${documentListIndex} found`);
+        }
+
+        const [readAllError, readAllResult] = await to<Document[]>( DocumentRepository.readMany(documentList.documentIds) );
+
+        if (readAllError) {
+            throw readAllError;
+        }
+
+        if (!readAllResult) {
+            return [];
+        }
+
+        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_DOCUMENTS, readAllResult);
+
+        return readAllResult;
+    }
+
+    @Action
+    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_ALL_LIST](documentListsUpdated: DocumentList[]): Promise<DocumentList[]> {
+        const [updateError, updateResult] = await to<DocumentList[]>( DocumentListRepository.updateMany(documentListsUpdated) );
 
         if (updateError) {
             throw updateError;
@@ -123,7 +169,24 @@ export default class ListsViewStoreModule extends VuexModule {
             throw new Error('updateResult is undefined');
         }
 
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST, documentList);
+        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LISTS, updateResult);
+
+        return updateResult;
+    }
+
+    @Action
+    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentListUpdated: DocumentList): Promise<DocumentList> {
+        const [updateError, updateResult] = await to<DocumentList>( DocumentListRepository.update(documentListUpdated) );
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        if (!updateResult) {
+            throw new Error('updateResult is undefined');
+        }
+
+        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST, updateResult);
 
         return updateResult;
     }

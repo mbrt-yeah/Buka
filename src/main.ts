@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 import allSettled from 'promise.allsettled';
 import Vue from 'vue';
-import Notifications from 'vue-notification';
+import VueJsModal from 'vue-js-modal'
+import VueNotifications from 'vue-notification';
 
 import Database from '@/database';
 import i18n from '@/i18n';
@@ -11,7 +12,9 @@ import store from '@/store';
 
 allSettled.shim();
 
-Vue.use(Notifications);
+Vue.use(VueJsModal);
+
+Vue.use(VueNotifications);
 
 Database.init().on('loaded', () => {
     const vueInstance = new Vue({

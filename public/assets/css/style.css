@@ -65,6 +65,16 @@ input[type=text]:focus {
     background-color: #3b3c6a;
 }
 
+.checkbox {
+    align-items: center;
+    display: flex;
+}
+
+.checkbox.label-hidden label {
+    width: 0;
+    text-indent: -9999px;
+}
+
 
 /**
  * Scrollbars
@@ -100,6 +110,112 @@ input[type=text]:focus {
 }
 
 .tippy-tooltip.buka-theme .tippy-arrow {}
+
+
+/**
+ * Vue-JS-Modal Component
+ */
+
+.vm--overlay {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+.vm--modal {
+    background-color: #252525 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 24px;
+    padding: 1.5rem;
+}
+
+
+/**
+ * Model Data List Component
+ */
+
+.model-data-list-component {
+    font-size: smaller;
+}
+
+.model-data-list-component .checkbox input[type='checkbox'] {
+    -webkit-appearance: none;
+    background-color: #1b1b1b;
+    margin: 0;
+    padding: 12px;
+    padding: 0.75rem;
+    position: relative;
+}
+
+.model-data-list-component .checkbox input[type='checkbox']:active,
+.model-data-list-component .checkbox input[type='checkbox']:checked {
+    background-color: #4169e1;
+}
+
+.model-data-list-component .checkbox input[type='checkbox']:checked::after {
+    color: #ffffff;
+    content: "\e900";
+    font-family: 'iconmonstr-buka';
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.model-data-list-component .data-list-header {
+    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+    margin-left: 6px;
+    margin-left: 0.375rem;
+}
+
+.model-data-list-component .data-list-header .data-list-title {}
+
+.model-data-list-component .data-list-header .checkbox.checkbox-select-all {
+    margin-top: 24px;
+    margin-top: 1.5rem;
+}
+
+.model-data-list-component .data-list-header .checkbox.checkbox-select-all input[type='checkbox'] {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.model-data-list-component .data-list {
+    list-style-type: none;
+    margin: 0 0 24px 0;
+    margin: 0 0 1.5rem 0;
+    max-height: 50%;
+    overflow-y: scroll;
+    padding: 0;
+}
+
+.model-data-list-component .data-list .data-list-entry {
+    align-items: center;
+    background-color: #333333;
+    display: flex;
+    padding: 6px; 
+    padding: 0.375rem;
+    margin-bottom: 1px;
+    margin-bottom: 0.0625rem;
+}
+
+.model-data-list-component .data-list .data-list-entry:last-child {
+    margin-bottom: 0;
+}
+
+.model-data-list-component .data-list .data-list-entry .checkbox label {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.model-data-list-component .data-list-buttons button {
+    margin-right: 24px; 
+    margin-right: 1.5rem;
+}
+
+.model-data-list-component .data-list-buttons button:last-child {
+    margin-right: 0;
+}
 
 
 /**
@@ -153,6 +269,11 @@ input[type=text]:focus {
     color: #4169e1;
 }
 
+.button-icon-right .text {
+    margin-left: 3px;
+    margin-left: 0.1875rem;
+}
+
 .button-positive {
     background-color: #43cc60;
 }
@@ -171,6 +292,15 @@ input[type=text]:focus {
     color: #43cc60;
 }
 
+.button-group > * {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.button-group > *:last-child {
+    margin-right: 0;
+}
+
 
 /**
  * Icons
@@ -180,32 +310,36 @@ input[type=text]:focus {
     font-family: 'iconmonstr-buka';
 }
 
-.iconmonstr-buka-grid:before {
+.iconmonstr-buka-check-mark:before {
     content: "\e900";
 }
 
-.iconmonstr-buka-list:before {
+.iconmonstr-buka-grid:before {
     content: "\e901";
 }
 
-.iconmonstr-buka-pencil:before {
+.iconmonstr-buka-list:before {
     content: "\e902";
 }
 
-.iconmonstr-buka-plus:before {
-    content: "\e906";
-}
-
-.iconmonstr-buka-save:before {
+.iconmonstr-buka-pencil:before {
     content: "\e903";
 }
 
-.iconmonstr-buka-trash-can:before {
+.iconmonstr-buka-plus:before {
     content: "\e904";
 }
 
-.iconmonstr-buka-x-mark:before {
+.iconmonstr-buka-save:before {
     content: "\e905";
+}
+
+.iconmonstr-buka-trash-can:before {
+    content: "\e906";
+}
+
+.iconmonstr-buka-x-mark:before {
+    content: "\e907";
 }
 
 
@@ -213,7 +347,7 @@ input[type=text]:focus {
  * Label Component
  */
 
- .label-component {
+.label-component {
     background-color: #1b1b1b;
     border-radius: 3px;
     border-radius: 0.1875rem;
@@ -221,6 +355,31 @@ input[type=text]:focus {
     margin: 0;
     padding: 3px 6px;
     padding: 0.1875rem 0.375rem;
+}
+
+.delete-something-component {
+    align-items: center;
+    display: flex;
+}
+
+.delete-something-component .delete-mode {
+    display: flex;
+}
+
+.delete-something-component .delete-mode .question {
+    font-size: 14px;
+    font-size: 0.875rem;
+    margin-top: -3px;
+    margin-top: -0.1875rem;
+}
+
+.delete-something-component .delete-mode > * {
+    margin-right: 12px;
+    margin-right: 0.75rem;
+}
+
+.delete-something-component .delete-mode > *:last-child {
+    margin-right: 0;
 }
 
 
@@ -899,6 +1058,43 @@ input[type=text]:focus {
     margin-bottom: 0.75rem;
 }
 
+#document-lists-view-component .view-content {
+    flex-direction: column;
+}
+
+#document-lists-view-component .view-content .view-content-header {
+    border-bottom: 1px solid #1b1b1b;
+    display: flex;
+    margin-bottom: 48px;
+    margin-bottom: 3rem;
+    padding-bottom: 12px;
+    padding-bottom: 0.75rem;
+    width: calc(100% - 366px);
+    width: calc(100% - 22.875rem);
+}
+
+#document-lists-view-component .view-content .view-content-header .list-name,
+#document-lists-view-component .view-content .view-content-header .button-group {
+    display: flex;
+    height: 24px;
+    height: 1.5rem;
+    width: 50%;
+}
+
+#document-lists-view-component .view-content .view-content-header .button-group .
+
+#document-lists-view-component .view-content .view-content-header .list-name {
+    justify-content: flex-start;
+}
+
+#document-lists-view-component .view-content .view-content-header .list-name .textfield {
+    display: flex;
+}
+
+#document-lists-view-component .view-content .view-content-header .button-group {
+    justify-content: flex-end;
+}
+
 #document-lists-view-component .add-list-form {
     display: flex;
     flex-direction: column;
@@ -936,8 +1132,6 @@ input[type=text]:focus {
     align-items: center;
     display: flex;
     font-size: small;
-    height: 32px;
-    height: 2rem;
     justify-content: flex-start;
     margin-bottom: 12px;
     margin-bottom: 0.75rem;
@@ -963,19 +1157,22 @@ input[type=text]:focus {
     margin-right: 0.75rem;
 }
 
-#document-lists-view-component .document-lists .document-list .document-list-edit-button,
-#document-lists-view-component .document-lists .document-list .document-list-delete-button {
+#document-lists-view-component .document-lists .document-list .add-button,
+#document-lists-view-component .document-lists .document-list .edit-button,
+#document-lists-view-component .document-lists .document-list .delete-button {
     display: none;
 }
 
-#document-lists-view-component .document-lists .document-list:hover .document-list-edit-button,
-#document-lists-view-component .document-lists .document-list:hover .document-list-delete-button {
+#document-lists-view-component .document-lists .document-list:hover .add-button,
+#document-lists-view-component .document-lists .document-list:hover .edit-button,
+#document-lists-view-component .document-lists .document-list:hover .delete-button {
     display: block;
 }
 
-#document-lists-view-component .document-lists .document-list .document-list-edit-button {
-    margin-right: 12px;
-    margin-right: 0.75rem;
+#document-lists-view-component .document-lists .document-list .add-button,
+#document-lists-view-component .document-lists .document-list .edit-button {
+    margin-right: 16px;
+    margin-right: 1rem;
 }
 
 
