@@ -10,7 +10,8 @@
                         v-bind:name="'firstname'"
                         v-bind:value="author['firstname']"
                         v-bind:isEditMode="isEditMode"
-                        v-bind:isStandalone="false"
+                        v-bind:showEditButton="false"
+                        v-bind:showDeleteButton="false"
                         @change="onEditableTextFieldChange(index, $event)"
                     />
                     
@@ -21,7 +22,8 @@
                         v-bind:name="'middlename'"
                         v-bind:value="author['middlename']"
                         v-bind:isEditMode="isEditMode"
-                        v-bind:isStandalone="false"
+                        v-bind:showEditButton="false"
+                        v-bind:showDeleteButton="false"
                         @change="onEditableTextFieldChange(index, $event)"
                     />
                     
@@ -32,7 +34,8 @@
                         v-bind:name="'surname'"
                         v-bind:value="author['surname']"
                         v-bind:isEditMode="isEditMode"
-                        v-bind:isStandalone="false"
+                        v-bind:showEditButton="false"
+                        v-bind:showDeleteButton="false"
                         @change="onEditableTextFieldChange(index, $event)"
                     />
 

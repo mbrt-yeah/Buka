@@ -125,7 +125,7 @@
 
             const l = documentLists.length;
 
-             if (!this.document || l  === 0) {
+            if (!this.document || l  === 0) {
                 return;
             }
 
