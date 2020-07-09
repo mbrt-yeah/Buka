@@ -1,13 +1,13 @@
 <template>
-    <div class="data-list-component">
-        <form>
-            <div class="data-list-header">
-                <h2 class="data-list-title">{{type}}</h2>
-                <div class="checkbox checkbox-select-all" v-if="data.length > 1">
-                    <input type="checkbox" value="selectAllData" v-bind:name="`checkbox-all`" @change="onCheckboxAllClick" />
-                    <label v-bind:for="`checkbox-all`">Select All</label>
-                </div>
+    <div class="model-data-list-component">
+        <div class="data-list-header">
+            <h2 class="data-list-title">{{title}}</h2>
+            <div class="checkbox checkbox-select-all" v-if="data.length > 1">
+                <input type="checkbox" value="selectAllData" v-bind:name="`checkbox-all`" @change="onCheckboxAllClick" />
+                <label v-bind:for="`checkbox-all`">Select All</label>
             </div>
+        </div>
+        <template v-if="data.length > 0">
             <ul class="data-list">
                 <li 
                     v-for="(datum, index) of data" 
@@ -23,7 +23,8 @@
                         />
                         <label v-bind:for="`checkbox-${index}`">Select Entry {{index}}</label>
                     </div>
-                    {{ datum.name }}
+                    <template v-if="model === 'Document'">{{ datum.metadata.title }}</template>
+                    <template v-if="model === 'DocumentList'">{{ datum.name }}</template>
                 </li>
             </ul>
             <div class="data-list-buttons">
@@ -36,7 +37,7 @@
                     {{ $t('Cancel') }}
                 </button>
             </div>
-        </form>
+        </template>
     </div>
 </template>
 
@@ -48,10 +49,16 @@
     import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
     import LISTS_VIEW_GETTER_TYPE from '../views/lists/lists-view-getter-type';
 
+    import MAIN_STORE_ACTION_TYPE from '@/main-store/main-store-action-type';
+    import MAIN_STORE_GETTER_TYPE from '@/main-store/main-store-getter-type';
+
     @Component
-    export default class DataList extends Vue {
-        @Prop({required: true})
-        public type: string;
+    export default class ModelDataList extends Vue {
+        @Prop({required: true, type: String})
+        public model: string;
+
+        @Prop({required: true, type: String})
+        public title: string;
 
         public data: Document[] | DocumentList[];
         public dataSelected: any[];
@@ -65,11 +72,17 @@
         }
 
         public async mounted() {
-            if (this.type === 'DocumentList') {
+            if (this.model === 'DocumentList') {
                 await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS);
                 this.data = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS];
+                return;
             }
-            
+
+            if (this.model === 'Document') {
+                await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
+                this.data = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
+                return;
+            }
         }
 
         public onCancelClick() {

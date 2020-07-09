@@ -34,7 +34,7 @@
                         v-bind:value="list.name"
                         v-bind:displayValueAs="`button`"
                         v-on:displayedValueClick="onListNameClick(index, $event)"
-                        v-on:add="onDocumentAdd(index)"
+                        v-on:add="onAddDocuments(index)"
                         v-on:change="onListNameChange(index, $event)"
                         v-on:delete="onListDelete(index, list)"
 
@@ -52,14 +52,19 @@
             </template>
         </div>
         <modal name="data-list-documents">
-            <data-list />
+            <model-data-list 
+                v-bind:model="'Document'"
+                v-bind:title="'Documents'"
+                v-on:save="onAddDocumentsSave"
+                v-on:cancel="onAddDocumentsCancel" 
+            />
         </modal>
     </div>
 </template>
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
-    import DataList from '@/components/data-list-component.vue';
+
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
@@ -70,15 +75,16 @@
     import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
     import LISTS_VIEW_GETTER_TYPE from '@/views/lists/lists-view-getter-type';
     import LISTS_VIEW_MUTATION_TYPE from './lists-view-mutation-type';
+    import ModelDataList from '@/components/model-data-list-component.vue';
     import NotifcationService from '@/services/notification-service';
     import SearchDropdownComponent from '@/components/search-dropdown-component.vue';
 
     @Component({
         components: {
-            DataList,
             DocumentShelfComponent,
             EditableTextfield,
             LabelComponent,
+            ModelDataList,
             SearchDropdownComponent
         }
     })
@@ -105,8 +111,21 @@
             this.lists = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS];
         }
 
-        public onDocumentAdd(index: number) {
+        public onAddDocuments(index: number): void {
             this.$modal.show('data-list-documents');
+        }
+
+        public async onAddDocumentsSave(documents: Document[]): Promise<void> {
+            if (documents.length === 0) {
+                return;
+            }
+
+            this.$modal.hide('data-list-documents');
+            console.log(documents);
+        }
+
+        public onAddDocumentsCancel(): void {
+            this.$modal.hide('data-list-documents');
         }
 
         public onListAddNewClick() {

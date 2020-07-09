@@ -126,19 +126,18 @@ input[type=text]:focus {
     border-radius: 0 !important;
     padding: 24px;
     padding: 1.5rem;
-    overflow-y: scroll !important;
 }
 
 
 /**
- * Data List Component
+ * Model Data List Component
  */
 
-.data-list-component {
+.model-data-list-component {
     font-size: smaller;
 }
 
-.data-list-component .checkbox input[type='checkbox'] {
+.model-data-list-component .checkbox input[type='checkbox'] {
     -webkit-appearance: none;
     background-color: #1b1b1b;
     margin: 0;
@@ -147,12 +146,12 @@ input[type=text]:focus {
     position: relative;
 }
 
-.data-list-component .checkbox input[type='checkbox']:active,
-.data-list-component .checkbox input[type='checkbox']:checked {
+.model-data-list-component .checkbox input[type='checkbox']:active,
+.model-data-list-component .checkbox input[type='checkbox']:checked {
     background-color: #4169e1;
 }
 
-.data-list-component .checkbox input[type='checkbox']:checked::after {
+.model-data-list-component .checkbox input[type='checkbox']:checked::after {
     color: #ffffff;
     content: "\e900";
     font-family: 'iconmonstr-buka';
@@ -162,32 +161,35 @@ input[type=text]:focus {
     transform: translate(-50%, -50%);
 }
 
-.data-list-component .data-list-header {
+.model-data-list-component .data-list-header {
     margin-bottom: 24px;
     margin-bottom: 1.5rem;
     margin-left: 6px;
     margin-left: 0.375rem;
 }
 
-.data-list-component .data-list-header .data-list-title {}
+.model-data-list-component .data-list-header .data-list-title {}
 
-.data-list-component .data-list-header .checkbox.checkbox-select-all {
+.model-data-list-component .data-list-header .checkbox.checkbox-select-all {
     margin-top: 24px;
     margin-top: 1.5rem;
 }
 
-.data-list-component .data-list-header .checkbox.checkbox-select-all input[type='checkbox'] {
+.model-data-list-component .data-list-header .checkbox.checkbox-select-all input[type='checkbox'] {
     margin-right: 12px;
     margin-right: 0.75rem;
 }
 
-.data-list-component .data-list {
+.model-data-list-component .data-list {
     list-style-type: none;
-    margin: 0;
+    margin: 0 0 24px 0;
+    margin: 0 0 1.5rem 0;
+    max-height: 50%;
+    overflow-y: scroll;
     padding: 0;
 }
 
-.data-list-component .data-list .data-list-entry {
+.model-data-list-component .data-list .data-list-entry {
     align-items: center;
     background-color: #333333;
     display: flex;
@@ -197,13 +199,22 @@ input[type=text]:focus {
     margin-bottom: 0.0625rem;
 }
 
-.data-list-component .data-list .data-list-entry:last-child {
+.model-data-list-component .data-list .data-list-entry:last-child {
     margin-bottom: 0;
 }
 
-.data-list-component .data-list .data-list-entry .checkbox label {
+.model-data-list-component .data-list .data-list-entry .checkbox label {
     margin-right: 12px;
     margin-right: 0.75rem;
+}
+
+.model-data-list-component .data-list-buttons button {
+    margin-right: 24px; 
+    margin-right: 1.5rem;
+}
+
+.model-data-list-component .data-list-buttons button:last-child {
+    margin-right: 0;
 }
 
 

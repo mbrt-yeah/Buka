@@ -60,8 +60,13 @@
                     />
                 </div>
             </div>
-            <modal v-bind:name="'data-list-document-lists'" v-bind:classes="'buka'">
-                <data-list v-bind:type="'DocumentList'" v-on:save="onAddToListSave" v-on:cancel="onAddToListCancel" />
+            <modal v-bind:name="'data-list-document-lists'" v-bind:classes="'buka'" v-bind:height="'auto'" v-bind:adaptive="true">
+                <model-data-list 
+                    v-bind:model="'DocumentList'"
+                    v-bind:title="'Document Lists'"
+                    v-on:save="onAddToListSave"
+                    v-on:cancel="onAddToListCancel" 
+                />
             </modal>
         </template>
     </div>
@@ -71,18 +76,18 @@
     import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
     import to from 'await-to-js';
 
-    import DataList from '@/components/data-list-component.vue';
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
     import DocumentRepository from '@/repositories/document-repository';
     import EditableMetadataForm from '@/components/editable-metadata-form-component.vue'
     import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
     import Metadata from '@/models/metadata';
+    import ModelDataList from '@/components/model-data-list-component.vue';
     import NotifcationService from '@/services/notification-service';
 
     @Component({
         components: {
-            DataList,
+            ModelDataList,
             EditableMetadataForm
         }
     })
