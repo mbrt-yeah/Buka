@@ -5,7 +5,9 @@ import Author from '@/models/author';
 
 import deleteFile from '@/utils/delete-file';
 import Document from '@/models/document';
+
 import DocumentRepository from '@/repositories/document-repository';
+import DocumentListRepository from '@/repositories/document-list-repository';
 
 import Facet from '@/models/facet';
 import FacetValue from '@/models/facet-value';
@@ -92,12 +94,10 @@ export default class MainStoreModule extends VuexModule {
         const [deleteError, deleteResult] = await to<Document>( DocumentRepository.delete(documentToDelete) );
 
         if (deleteError) {
-            // TODO figure out what to do here
             throw deleteError;
         }
 
         if (deleteResult === undefined) {
-            // TODO figure out what to do here
             throw new Error('deleteResult undefined');
         }
 
@@ -105,9 +105,19 @@ export default class MainStoreModule extends VuexModule {
             deleteFile(documentToDelete.coverImage.filePath);
         }
 
+        const documentLists = await DocumentListRepository.find({ 'documentIds': { '$contains': documentToDelete.id } });
+
+        if (documentLists.length > 0) {
+            for (const documentList of documentLists) {
+                documentList.removeDocumentIds(documentToDelete.id);
+            }
+
+            await DocumentListRepository.updateMany(documentLists);
+        }
+
         await this.context.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
 
-        return deleteResult;
+        return documentToDelete;
     }
 
     @Action

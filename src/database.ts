@@ -5,9 +5,7 @@ import * as path from 'path';
 import Configuration from '@/configuration';
 import Document from '@/models/document';
 import DocumentList from '@/models/document-list';
-import DocumentListRepository from '@/repositories/document-list-repository';
 import Facet from '@/models/facet';
-import to from 'await-to-js';
 
 export default class Database {
     private static _instance: Loki;
@@ -45,36 +43,15 @@ export default class Database {
             throw new Error('database has not been initialized');
         }
 
-        let documents: Collection<Document> = Database._instance.getCollection('documents');
-        let documentLists: Collection<DocumentList> = Database._instance.getCollection('document-lists');
+        const documents: Collection<Document> = Database._instance.getCollection('documents');
+        const documentLists: Collection<DocumentList> = Database._instance.getCollection('document-lists');
 
         if (!documents) {
-            documents = Database._instance.addCollection<Document>('documents');
+            Database._instance.addCollection<Document>('documents');
         }
 
         if (!documentLists) {
-            documentLists = Database._instance.addCollection<DocumentList>('document-lists');
+            Database._instance.addCollection<DocumentList>('document-lists');
         }
-
-        documents.addListener('delete', async (document: Document) => {
-            const [readAllError, readAllResult] = await to<DocumentList[]>( DocumentListRepository.readAll() );
-
-            if (readAllError) {
-                throw readAllError;
-            }
-
-            if (!readAllResult) {
-                throw new Error('readAllResult is undefined');
-            }
-
-            const documentListsUpdated: DocumentList[] = [];
-
-            for (const documentList of readAllResult) {
-                documentList.removeDocumentIds(document.id);
-                documentListsUpdated.push(documentList);
-            }
-
-            await DocumentListRepository.updateMany(documentListsUpdated);
-        });
     }
 }

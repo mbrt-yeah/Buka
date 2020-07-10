@@ -1,7 +1,7 @@
 import { plainToClass } from '@marcj/marshal';
 
-import Document from '@/models/document';
 import Database from '@/database';
+import Document from '@/models/document';
 
 export default class DocumentRepository {
     public static create(document: Document): Promise<Document> {
@@ -92,10 +92,8 @@ export default class DocumentRepository {
         });
     }
 
-    public static delete(documentToRemove: Document): Promise<Document> {
-        return new Promise((resolve, reject) => {
-            Database.instance().getCollection<Document>('documents').findAndRemove({ 'id' : { '$eq' : documentToRemove.id } });
-            return resolve(documentToRemove);
-        });
+    public static async delete(documentToRemove: Document): Promise<Document> {
+        Database.instance().getCollection<Document>('documents').findAndRemove({ 'id' : { '$eq' : documentToRemove.id } });
+        return Promise.resolve(documentToRemove);
     }
 }

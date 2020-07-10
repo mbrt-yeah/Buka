@@ -52,7 +52,8 @@ export default class DocumentList {
                 continue;
             }
 
-            this.documentIds = this.documentIds.splice(index, 1);
+            this.documentIds.splice(index, 1);
+
             documentIdsRemoved++;
         }
 

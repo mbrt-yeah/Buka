@@ -16,6 +16,27 @@ export default class DocumentListRepository {
         });
     }
 
+    public static delete(documentListToRemove: DocumentList): Promise<DocumentList> {
+        return new Promise((resolve, reject) => {
+            Database.instance().getCollection<DocumentList>('document-lists').findAndRemove({ 'id' : { '$eq' : documentListToRemove.id } });
+            return resolve(documentListToRemove);
+        });
+    }
+
+    public static find(query: any): Promise<DocumentList[]> {
+        return new Promise((resolve, reject) => {
+            const documentLists = Database.instance().getCollection<DocumentList>('document-lists').find(query);
+
+            const finalDocumentLists: DocumentList[] = [];
+
+            for (const documentList of documentLists) {
+                finalDocumentLists.push( plainToClass(DocumentList, documentList) );
+            }
+
+            return resolve(finalDocumentLists);
+        });
+    }
+
     public static async read(id: string): Promise<DocumentList> {
         return new Promise((resolve, reject) => {
             const documentList = Database.instance().getCollection<DocumentList>('document-lists').findOne({ 'id' : { '$eq' : id } });
@@ -64,12 +85,5 @@ export default class DocumentListRepository {
         }
 
         return Promise.all<DocumentList>(updateOps);
-    }
-
-    public static delete(documentListToRemove: DocumentList): Promise<DocumentList> {
-        return new Promise((resolve, reject) => {
-            Database.instance().getCollection<DocumentList>('document-lists').findAndRemove({ 'id' : { '$eq' : documentListToRemove.id } });
-            return resolve(documentListToRemove);
-        });
     }
 }
