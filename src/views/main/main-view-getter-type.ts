@@ -1,3 +1,0 @@
-enum MAIN_VIEW_GETTER_TYPE {}
-
-export default MAIN_VIEW_GETTER_TYPE;

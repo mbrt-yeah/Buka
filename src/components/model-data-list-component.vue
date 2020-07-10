@@ -43,14 +43,18 @@
 
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
+    import to from 'await-to-js';
 
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
-    import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
-    import LISTS_VIEW_GETTER_TYPE from '../views/lists/lists-view-getter-type';
 
-    import MAIN_STORE_ACTION_TYPE from '@/main-store/main-store-action-type';
-    import MAIN_STORE_GETTER_TYPE from '@/main-store/main-store-getter-type';
+    import LIBRARY_STORE_MODULE_ACTION_TYPE from '@/store-modules/library/library-store-module-action-type';
+    import LIBRARY_STORE_MODULE_GETTER_TYPE from '@/store-modules/library/library-store-module-getter-type';
+    import LIBRARY_STORE_MODULE_MUTATION_TYPE from '@/store-modules/library/library-store-module-mutation-type';
+
+    import LIST_STORE_MODULE_ACTION_TYPE from '@/store-modules/list/lists-store-module-action-type';
+    import LIST_STORE_MODULE_GETTER_TYPE from '@/store-modules/list/lists-store-module-getter-type';
+    import LIST_STORE_MODULE_MUTATION_TYPE from '@/store-modules/list/lists-store-module-mutation-type';
 
     @Component
     export default class ModelDataList extends Vue {
@@ -73,14 +77,14 @@
 
         public async mounted() {
             if (this.model === 'DocumentList') {
-                await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS);
-                this.data = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS];
+                await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL);
+                this.data = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_GET_ALL];
                 return;
             }
 
             if (this.model === 'Document') {
-                await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
-                this.data = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
+                await this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL);
+                this.data = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.DOCUMENT_GET_ALL];
                 return;
             }
         }

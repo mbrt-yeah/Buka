@@ -7,35 +7,35 @@ import DocumentRepository from '@/repositories/document-repository';
 import DocumentList from '@/models/document-list';
 import DocumentListRepository from '@/repositories/document-list-repository';
 
-import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
-import LISTS_VIEW_GETTER_TYPE from '@/views/lists/lists-view-getter-type';
-import LISTS_VIEW_MUTATION_TYPE from '@/views/lists/lists-view-mutation-type';
+import LIST_STORE_MODULE_ACTION_TYPE from '@/store-modules/list/lists-store-module-action-type';
+import LIST_STORE_MODULE_GETTER_TYPE from '@/store-modules/list/lists-store-module-getter-type';
+import LIST_STORE_MODULE_MUTATION_TYPE from '@/store-modules/list/lists-store-module-mutation-type';
 
 @Module
-export default class ListsViewStoreModule extends VuexModule {
+export default class ListStoreModule extends VuexModule {
     public listFocusedDocuments: Document[] = [];
     public listFocusedIndex: number = -1;
     public lists: DocumentList[] = [];
 
-    get [LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_DOCUMENTS](): Document[] {
+    get [LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS](): Document[] {
         return this.listFocusedDocuments;
     }
 
-    get [LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_INDEX](): number {
+    get [LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_INDEX](): number {
         return this.listFocusedIndex;
     }
 
-    get [LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS](): DocumentList[] {
+    get [LIST_STORE_MODULE_GETTER_TYPE.LIST_GET_ALL](): DocumentList[] {
         return this.lists;
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.ADD_LIST](documentList: DocumentList): void {
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_ADD_ONE](documentList: DocumentList): void {
         this.lists.push(documentList);
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.REMOVE_LIST](index: number): void {
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_REMOVE_ONE](index: number): void {
         if ( index < 0 || index >= this.lists.length ) {
             return;
         }
@@ -44,12 +44,12 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST](documentListNew: DocumentList): void {
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ONE](documentListNew: DocumentList): void {
         let i = 0;
         const l = this.lists.length;
 
         for (i; i < l; i++) {
-            if (this.lists[i]._id === documentListNew._id) {
+            if (this.lists[i].id === documentListNew.id) {
                 continue;
             }
 
@@ -59,22 +59,22 @@ export default class ListsViewStoreModule extends VuexModule {
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.SET_LISTS](documentLists: DocumentList[]): void {
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ALL](documentLists: DocumentList[]): void {
         this.lists = documentLists;
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_DOCUMENTS](listFocusedDocuments: Document[]): void {
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_DOCUMENTS](listFocusedDocuments: Document[]): void {
         this.listFocusedDocuments = listFocusedDocuments;
     }
 
     @Mutation
-    public [LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_INDEX](listFocusedIndex: number): void {
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_INDEX](listFocusedIndex: number): void {
         this.listFocusedIndex = listFocusedIndex;
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.CREATE_LIST](documentList: DocumentList): Promise<DocumentList> {
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_CREATE_ONE](documentList: DocumentList): Promise<DocumentList> {
         if (!documentList.name) {
             throw new Error('dcumentList to be created has no name');
         }
@@ -89,13 +89,13 @@ export default class ListsViewStoreModule extends VuexModule {
             throw new Error('createResult is undefined');
         }
 
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.ADD_LIST, createResult);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_ADD_ONE, createResult);
 
         return createResult;
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.DELETE_LIST](index: number): Promise<DocumentList> {
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_DELETE_ONE](index: number): Promise<DocumentList> {
         const listToDelete = this.lists[index];
 
         if (!listToDelete) {
@@ -112,13 +112,13 @@ export default class ListsViewStoreModule extends VuexModule {
             throw new Error('deleteResult is undefined');
         }
 
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.REMOVE_LIST, index);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_REMOVE_ONE, index);
 
         return deleteResult;
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS](): Promise<DocumentList[]> {
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL](): Promise<DocumentList[]> {
         const [readAllError, readAllResult] = await to<DocumentList[]>( DocumentListRepository.readAll() );
 
         if (readAllError) {
@@ -129,13 +129,13 @@ export default class ListsViewStoreModule extends VuexModule {
             return [];
         }
 
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LISTS, readAllResult);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ALL, readAllResult);
 
         return readAllResult;
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.READ_ALL_LIST_DOCUMENTS](documentListIndex: number): Promise<Document[]> {
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL_DOCUMENTS](documentListIndex: number): Promise<Document[]> {
         const documentList = this.lists[documentListIndex];
 
         if (!documentList) {
@@ -152,30 +152,13 @@ export default class ListsViewStoreModule extends VuexModule {
             return [];
         }
 
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_DOCUMENTS, readAllResult);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_DOCUMENTS, readAllResult);
 
         return readAllResult;
     }
 
     @Action
-    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_ALL_LIST](documentListsUpdated: DocumentList[]): Promise<DocumentList[]> {
-        const [updateError, updateResult] = await to<DocumentList[]>( DocumentListRepository.updateMany(documentListsUpdated) );
-
-        if (updateError) {
-            throw updateError;
-        }
-
-        if (!updateResult) {
-            throw new Error('updateResult is undefined');
-        }
-
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LISTS, updateResult);
-
-        return updateResult;
-    }
-
-    @Action
-    public async [LISTS_VIEW_ACTION_TYPE.UPDATE_LIST](documentListUpdated: DocumentList): Promise<DocumentList> {
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_ONE](documentListUpdated: DocumentList): Promise<DocumentList> {
         const [updateError, updateResult] = await to<DocumentList>( DocumentListRepository.update(documentListUpdated) );
 
         if (updateError) {
@@ -186,7 +169,24 @@ export default class ListsViewStoreModule extends VuexModule {
             throw new Error('updateResult is undefined');
         }
 
-        this.context.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST, updateResult);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ONE, updateResult);
+
+        return updateResult;
+    }
+
+    @Action
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_MANY](documentListsUpdated: DocumentList[]): Promise<DocumentList[]> {
+        const [updateError, updateResult] = await to<DocumentList[]>( DocumentListRepository.updateMany(documentListsUpdated) );
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        if (!updateResult) {
+            throw new Error('updateResult is undefined');
+        }
+
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ALL, updateResult);
 
         return updateResult;
     }

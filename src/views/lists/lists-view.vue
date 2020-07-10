@@ -94,9 +94,9 @@
     import ModelDataList from '@/components/model-data-list-component.vue';
     import SearchDropdownComponent from '@/components/search-dropdown-component.vue';
 
-    import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
-    import LISTS_VIEW_GETTER_TYPE from '@/views/lists/lists-view-getter-type';
-    import LISTS_VIEW_MUTATION_TYPE from '@/views/lists/lists-view-mutation-type';
+    import LIST_STORE_MODULE_ACTION_TYPE from '@/store-modules/list/lists-store-module-action-type';
+    import LIST_STORE_MODULE_GETTER_TYPE from '@/store-modules/list/lists-store-module-getter-type';
+    import LIST_STORE_MODULE_MUTATION_TYPE from '@/store-modules/list/lists-store-module-mutation-type';
 
     import NotifcationService from '@/services/notification-service';
 
@@ -129,8 +129,8 @@
         }
 
         public async mounted() {
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LISTS);
-            this.lists = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_ALL_LISTS];
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL);
+            this.lists = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_GET_ALL];
         }
 
         public onAddDocuments(): void {
@@ -159,9 +159,9 @@
                 return;
             }
 
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_LIST, listFocused);
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LIST_DOCUMENTS, this.listFocusedIndex);
-            this.listFocusedDocuments = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_DOCUMENTS];
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_ONE, listFocused);
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL_DOCUMENTS, this.listFocusedIndex);
+            this.listFocusedDocuments = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS];
 
             NotifcationService.success(`${documentIdsAdded} documents have been added to list &raquo;${listFocused.name}&laquo;.`);
         }
@@ -181,7 +181,7 @@
 
         public async onListDelete(index: number): Promise<void> {
             const listToDelete = this.lists[index];
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.DELETE_LIST, index);
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_DELETE_ONE, index);
             this.listFocusedIndex = -1;
             NotifcationService.success(`List with name &raquo;${listToDelete.name}&laquo; deleted`);
         }
@@ -194,23 +194,23 @@
             const listToUpdate = this.lists[index].clone();
             listToUpdate.name = event.value;
 
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_LIST, listToUpdate);
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_ONE, listToUpdate);
 
             NotifcationService.success(`List name updated`);
         }
 
         public async onListNameClick(index: number, event: string): Promise<void> {
-            this.$store.commit(LISTS_VIEW_MUTATION_TYPE.SET_LIST_FOCUSED_INDEX, index);
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.READ_ALL_LIST_DOCUMENTS, index);
+            this.$store.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_INDEX, index);
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL_DOCUMENTS, index);
 
-            this.listFocusedDocuments = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_DOCUMENTS];
-            this.listFocusedIndex = this.$store.getters[LISTS_VIEW_GETTER_TYPE.GET_LIST_FOCUSED_INDEX];
+            this.listFocusedDocuments = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS];
+            this.listFocusedIndex = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_INDEX];
         }
 
         public async onListNewSaveClick(): Promise<void> {
             const list = new DocumentList();
             list.name = this.listNewName;
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.CREATE_LIST, list);
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_CREATE_ONE, list);
 
             this.addNewListMode = false;
             this.listNewName = '';

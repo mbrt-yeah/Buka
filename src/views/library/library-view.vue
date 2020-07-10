@@ -29,8 +29,6 @@
                 v-if="documents.length > 0"
                 v-bind:documents="documents"
                 v-bind:showDocumentPreview="true"
-                v-on:documentDelete="onDocumentDelete"
-                v-on:documentUpdate="onDocumentUpdate"
             />
         </div>
     </div>
@@ -38,15 +36,20 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import to from 'await-to-js';
+
     import Document from '@/models/document';
-    import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
     import Facet from '@/models/facet';
     import FacetValue from '@/models/facet-value';
+
+    import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
     import LabelComponent from '@/components/label-component.vue';
-    import MAIN_STORE_ACTION_TYPE from '@/main-store/main-store-action-type';
-    import MAIN_STORE_GETTER_TYPE from '@/main-store/main-store-getter-type';
-    import MAIN_STORE_MUTATION_TYPE from '@/main-store/main-store-mutation-type';
+
     import NotifictionService from '@/services/notification-service';
+
+    import LIBRARY_STORE_MODULE_ACTION_TYPE from '@/store-modules/library/library-store-module-action-type';
+    import LIBRARY_STORE_MODULE_GETTER_TYPE from '@/store-modules/library/library-store-module-getter-type';
+    import LIBRARY_STORE_MODULE_MUTATION_TYPE from '@/store-modules/library/library-store-module-mutation-type';
 
     @Component({
         components: {
@@ -67,12 +70,23 @@
         }
 
         public async mounted(): Promise<void> {
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
-            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
-            this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
-            this.facetValuesSelected = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACET_VALUES_SELECTED];
+            const [dispatchError, documents] = await to<Document[]>( this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL) );
+
+            if (dispatchError) {
+                throw dispatchError;
+            }
+
+            if (!documents) {
+                throw new Error('documents undefined');
+            }
+
+            this.documents = documents;
+
+            this.facets = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_GET_ALL];
+            this.facetValuesSelected = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_VALUE_SELECTED_GET_ALL];
         }
 
+        /*
         public async onDocumentDelete(payload: any[]) {
             const index: number = payload[0];
             const document: Document = payload[1];
@@ -84,7 +98,9 @@
             this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
             this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
         }
+        */
 
+        /*
         public async onDocumentUpdate(payload: any[]) {
             const index: number = payload[0];
             const document: Document = payload[1];
@@ -96,23 +112,40 @@
             this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
             this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
         }
+        */
 
         public async onFacetValueClick(facetValue: FacetValue): Promise<void> {
-            this.$store.commit(MAIN_STORE_MUTATION_TYPE.ADD_FACET_VALUE_SELECTED, facetValue);
+            this.$store.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_VALUE_ADD_SELECTED, facetValue);
 
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
+            const [dispatchError, documents] = await to<Document[]>( this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL) );
 
-            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
-            this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
+            if (dispatchError) {
+                throw dispatchError;
+            }
+
+            if (!documents) {
+                throw new Error('documents undefined');
+            }
+
+            this.documents = documents;
+            this.facets = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_GET_ALL];
         }
 
         public async onFacetValueRemoveClick(index: number): Promise<void> {
-            this.$store.commit(MAIN_STORE_MUTATION_TYPE.REMOVE_FACET_VALUE_SELECTED, index);
+            this.$store.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_VALUE_REMOVE_SELECTED, index);
 
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
+            const [dispatchError, documents] = await to<Document[]>( this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL) );
 
-            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
-            this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
+            if (dispatchError) {
+                throw dispatchError;
+            }
+
+            if (!documents) {
+                throw new Error('documents undefined');
+            }
+
+            this.documents = documents;
+            this.facets = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_GET_ALL];
         }
     }
 </script>

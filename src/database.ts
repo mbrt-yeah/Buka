@@ -1,4 +1,3 @@
-import Datastore from 'nedb';
 import Loki from 'lokijs';
 import * as path from 'path';
 

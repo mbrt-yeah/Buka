@@ -1,3 +1,0 @@
-enum MAIN_VIEW_ACTION_TYPE {}
-
-export default MAIN_VIEW_ACTION_TYPE;
