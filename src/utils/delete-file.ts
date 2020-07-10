@@ -1,7 +1,10 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 const deleteFile = function(filePath: string): string {
+    if ( !fs.existsSync(filePath) ) {
+        return filePath;
+    }
+
     fs.unlinkSync(filePath);
     return filePath;
 };

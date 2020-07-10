@@ -43,8 +43,8 @@ export default class Database {
             throw new Error('database has not been initialized');
         }
 
-        const documents = Database._instance.getCollection('documents');
-        const documentLists = Database._instance.getCollection('document-lists');
+        const documents: Collection<Document> = Database._instance.getCollection('documents');
+        const documentLists: Collection<DocumentList> = Database._instance.getCollection('document-lists');
 
         if (!documents) {
             Database._instance.addCollection<Document>('documents');
