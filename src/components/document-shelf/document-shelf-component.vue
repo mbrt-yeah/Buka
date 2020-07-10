@@ -4,26 +4,26 @@
             <div class="document-shelf-options">
                 <form class="sort-options">
                     <label class="label" for="sort-options">{{ $t('Sort by') }}</label>
-                    <select id="sort-options" v-model="documentsSortOptionSelected" @change="onDocumentsSortOptionChange">
-                        <option v-for="(documentsSortOption, index) in documentsSortOptions" v-bind:value="documentsSortOption" :key="index">{{ $t(`${documentsSortOption}`) }}</option>
+                    <select id="sort-options" v-model="sortOptionselected" @change="onSortOptionChange">
+                        <option v-for="(sortOption, index) in sortOptions" v-bind:value="sortOption" :key="index">{{ $t(`${sortOption}`) }}</option>
                     </select>
                 </form>
                 <ul class="display-options">
                     <li class="display-option" >
-                        <button type="button" :class="['button button-small button-text', documentListDisplayOption === 'grid' ? 'active' : '']" @click="onDocumentListDisplayOptionClick('grid')">
+                        <button type="button" :class="['button button-small button-text', listDisplayOption === 'grid' ? 'active' : '']" @click="onListDisplayOptionClick('grid')">
                             <span class="iconmonstr iconmonstr-buka-grid"></span>
                             {{ $t('Grid') }}
                         </button>
                     </li>
                     <li class="display-option">
-                        <button type="button" :class="['button button-small button-text', documentListDisplayOption === 'list' ? 'active' : '']" @click="onDocumentListDisplayOptionClick('list')">
+                        <button type="button" :class="['button button-small button-text', listDisplayOption === 'list' ? 'active' : '']" @click="onListDisplayOptionClick('list')">
                             <span class="iconmonstr iconmonstr-buka-list"></span>
                             {{ $t('List') }}
                         </button>
                     </li>
                 </ul>
             </div>
-            <ul :class="`document-shelf ${documentListDisplayOption}`">
+            <ul :class="`document-shelf ${listDisplayOption}`">
                 <li 
                     v-for="(document, index) in documents" 
                     :key="document.id" class="document" 
@@ -48,8 +48,9 @@
         <document-preview-component 
             v-if="showDocumentPreview" 
             v-bind:document="documents[documentFocusedIndex]"
-            v-on:documentDelete="onDocumentDelete([documentFocusedIndex, $event])"
-            v-on:documentUpdate="onDocumentUpdate([documentFocusedIndex, $event])"
+            v-on:documentAddToLists="onDocumentAddToLists($event.document, $event.lists)"
+            v-on:documentDelete="onDocumentDelete(documentFocusedIndex, $event)"
+            v-on:documentUpdate="onDocumentUpdate(documentFocusedIndex, $event)"
         />
     </div>
 </template>
@@ -61,12 +62,18 @@
     import Configuration from '@/configuration';
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
-    import DOCUMENT_SHELF_COMPONENT_ACTION_TYPE from '@/components/document-shelf/document-shelf-component-action-type';
-    import DOCUMENT_SHELF_COMPONENT_GETTER_TYPE from '@/components/document-shelf/document-shelf-component-getter-type';
-    import DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE from '@/components/document-shelf/document-shelf-component-mutation-type';
+
+    import DOCUMENT_SHELF_COMPONENT_STORE_MODULE_ACTION_TYPE from '@/components/document-shelf/document-shelf-component-store-module-action-type';
+    import DOCUMENT_SHELF_COMPONENT_STORE_MODULE_GETTER_TYPE from '@/components/document-shelf/document-shelf-component-store-module-getter-type';
+    import DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE from '@/components/document-shelf/document-shelf-component-store-module-mutation-type';
     import DocumentPreviewComponent from '@/components/document-preview-component.vue';
-    import DocumentShelfComponentStoreModule from '@/components/document-shelf/document-shelf-component-module';
+    import DocumentShelfComponentStoreModule from '@/components/document-shelf/document-shelf-component-store-module';
+
     import LIST_DISPLAY_OPTION from '@/constants/list-display-option';
+
+    import NotificationService from '@/services/notification-service';
+
+    import LIST_STORE_MODULE_ACTION_TYPE from '@/store-modules/list/lists-store-module-action-type';
 
     @Component({
         components: {
@@ -83,9 +90,9 @@
         public id: string;
 
         public documentFocusedIndex: number | null;
-        public documentListDisplayOption: LIST_DISPLAY_OPTION;
-        public documentsSortOptions: string[];
-        public documentsSortOptionSelected: string;
+        public listDisplayOption: LIST_DISPLAY_OPTION;
+        public sortOptions: string[];
+        public sortOptionselected: string;
 
         public constructor() {
             super();
@@ -96,44 +103,62 @@
                 this.$store.registerModule(this.id, DocumentShelfComponentStoreModule);
             }
 
-            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENTS, this.documents);
-            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SORT_DOCUMENTS);
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE.DOCUMENT_SET_ALL, this.documents);
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE.LIST_SORT);
 
             this.documentFocusedIndex = null;
-            this.documentListDisplayOption = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENT_LIST_DISPLAY_OPTION] || Configuration.instance().documentListDisplay.displayOptionDefault;
-            this.documentsSortOptions = Configuration.instance().documentSorting.sortOptions;
-            this.documentsSortOptionSelected = this.$store.getters[DOCUMENT_SHELF_COMPONENT_GETTER_TYPE.GET_DOCUMENTS_SORT_OPTION_SELECTED] || Configuration.instance().documentSorting.sortOptionDefault;
+            this.listDisplayOption = this.$store.getters[DOCUMENT_SHELF_COMPONENT_STORE_MODULE_GETTER_TYPE.LIST_GET_DISPLAY_OPTION]
+                || Configuration.instance().documentListDisplay.displayOptionDefault;
+
+            this.sortOptions = Configuration.instance().documentSorting.sortOptions;
+    
+            this.sortOptionselected = this.$store.getters[DOCUMENT_SHELF_COMPONENT_STORE_MODULE_GETTER_TYPE.LIST_GET_SORT_OPTION_SELECTED]
+                || Configuration.instance().documentSorting.sortOptionDefault;
         }
 
-        public onDataListEntryClicked(documentList: DocumentList) {
-            
+        public onListDisplayOptionClick(listDisplayOption: LIST_DISPLAY_OPTION): void {
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE.LIST_DISPLAY_OPTION_SET, listDisplayOption);
+            this.listDisplayOption = listDisplayOption
         }
 
-        public onDocumentListDisplayOptionClick(documentListDisplayOption: LIST_DISPLAY_OPTION) {
-            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENT_LIST_DISPLAY_OPTION, documentListDisplayOption);
-            this.documentListDisplayOption = documentListDisplayOption
+        public async onDocumentAddToLists(document: Document, documentLists: DocumentList[]): Promise<void> {
+            const l = documentLists.length;
+
+            if (!document || l  === 0) {
+                return;
+            }
+
+            for (const documentList of documentLists) {
+               documentList.documentIds.push(document.id);
+            }
+
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_MANY, documentLists);
+
+            NotificationService.success(`Document &raquo;${document.metadata.title}&laquo; has been added to &raquo;${l}&laquo; lists.`);
         }
 
-        public onDocumentClick(index: number) {
+        public onDocumentClick(index: number): void {
             this.documentFocusedIndex = index;
         }
 
-        public onDocumentDelete(payload: any[]) {
-            this.$emit('documentDelete', payload);
+        public onDocumentDelete(documentFocusedIndex: number, document: Document): void {
+            console.log(documentFocusedIndex);
+            console.log(document);
         }
 
         @Watch('documents')
-        public onDocumentsChange() {
+        public onDocumentsChange(): void {
             this.documentFocusedIndex = null;
         }
 
-        public onDocumentsSortOptionChange() {
-            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SET_DOCUMENTS_SORT_OPTION_SELECTED, this.documentsSortOptionSelected);
-            this.$store.commit(DOCUMENT_SHELF_COMPONENT_MUTATION_TYPE.SORT_DOCUMENTS);
+        public onSortOptionChange(): void {
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE.LIST_SET_SORT_OPTION_SELECTED, this.sortOptionselected);
+            this.$store.commit(DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE.LIST_SORT);
         }
 
-        public onDocumentUpdate(payload: any[]) {
-            this.$emit('documentUpdate', payload);
+        public onDocumentUpdate(documentFocusedIndex: number, document: Document): void {
+            console.log(documentFocusedIndex);
+            console.log(document);
         }
     }
 </script>

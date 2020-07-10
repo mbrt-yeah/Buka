@@ -1,0 +1,5 @@
+enum MAIN_STORE_MODULE_ACTION_TYPE {
+    SIDEBAR_SET_SHOW = 'sidebarSetShow'
+}
+
+export default MAIN_STORE_MODULE_ACTION_TYPE;

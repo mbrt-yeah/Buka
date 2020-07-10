@@ -78,12 +78,10 @@
 
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
-    import DocumentRepository from '@/repositories/document-repository';
-    import EditableMetadataForm from '@/components/editable-metadata-form-component.vue'
-    import LISTS_VIEW_ACTION_TYPE from '@/views/lists/lists-view-action-type';
     import Metadata from '@/models/metadata';
+
+    import EditableMetadataForm from '@/components/editable-metadata-form-component.vue'
     import ModelDataList from '@/components/model-data-list-component.vue';
-    import NotifcationService from '@/services/notification-service';
 
     @Component({
         components: {
@@ -121,21 +119,12 @@
         }
 
         public async onAddToListSave(documentLists: DocumentList[]): Promise<void> {
+            this.$emit('documentAddToLists', {
+                document: this.document,
+                lists: documentLists
+            });
+
             this.$modal.hide('data-list-document-lists');
-
-            const l = documentLists.length;
-
-            if (!this.document || l  === 0) {
-                return;
-            }
-
-            for (const documentList of documentLists) {
-               documentList.documentIds.push(this.document.id);
-            }
-
-            await this.$store.dispatch(LISTS_VIEW_ACTION_TYPE.UPDATE_ALL_LIST, documentLists);
-
-            NotifcationService.success(`Document &raquo;${this.document.metadata.title}&laquo; has been added to &raquo;${l}&laquo; lists.`);
         }
 
         public onCancelClick(): void {

@@ -27,8 +27,6 @@
                 v-if="documents.length > 0"
                 v-bind:documents="documents"
                 v-bind:showDocumentPreview="true"
-                v-on:documentDelete="onDocumentDelete"
-                v-on:documentUpdate="onDocumentUpdate"
             />
         </div>
     </div>
@@ -40,16 +38,11 @@
     import VueAutoDropzone from 'vue-auto-dropzone';
     import to from 'await-to-js';
 
-    import MAIN_VIEW_MUTATION_TYPE from '@/views/main/main-view-mutation-type';
     import Document from '@/models/document';
-    import DocumentRepository from '@/repositories/document-repository';
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
-    import MAIN_STORE_ACTION_TYPE from '@/main-store/main-store-action-type';
-    import MAIN_STORE_GETTER_TYPE from '@/main-store/main-store-getter-type';
-    import MAIN_STORE_MUTATION_TYPE from '@/main-store/main-store-mutation-type';
+    import LIBRARY_STORE_MODULE_ACTION_TYPE from '@/store-modules/library/library-store-module-action-type';
     import NewDocumentHandlerPDF from '@/new-document-handlers/new-document-handler-pdf';
     import NotifictionService from '@/services/notification-service';
-    import store from '@/store';
 
     @Component({
         components: {
@@ -89,33 +82,17 @@
             };
         }
 
-        public async mounted() {
-            await this.$store.commit(MAIN_VIEW_MUTATION_TYPE.SET_SHOW_SIDEBAR, false);
+        public mounted(): void {
             this.documents = [];
             this.dropzone = this.$refs.dropzone;
             this.dropzoneFilesTotal = 0;
         }
 
-        public async onDocumentDelete(payload: any[]) {
-            const index: number = payload[0];
-            const document: Document = payload[1];
-
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.DELETE_DOCUMENT, document);
-            this.documents = [];
-        }
-
-        public async onDocumentUpdate(payload: any[]) {
-            const index: number = payload[0];
-            const document: Document = payload[1];
-
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.UPDATE_DOCUMENT, document);
-        }
-
-        public onDocumentsAdded(file: DropzoneFile) {
+        public onDocumentsAdded(file: DropzoneFile): void {
             this.dropzoneFilesTotal += 1;
         }
 
-        public onDocumentsCancelClick() {
+        public onDocumentsCancelClick(): void {
             this.dropzone.removeAllFiles(true);
             this.dropzoneFilesTotal = 0;
         }
@@ -145,14 +122,21 @@
                 documentsNew.push(handlerResult);
             }
 
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.CREATE_DOCUMENTS, documentsNew);
+            const [dispatchError, documents] = await to<Document[]>( this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_CREATE_MANY, documentsNew) );
 
-            this.documents = documentsNew;
+            if (dispatchError) {
+                throw dispatchError;
+            }
 
-            NotifictionService.success(`${acceptedFilesTotal} documents saved`);
+            if (!documents) {
+                throw new Error('documents undefined');
+            }
 
+            this.documents = documents;
             this.dropzone.removeAllFiles(true);
             this.dropzoneFilesTotal = 0;
+
+            NotifictionService.success(`${acceptedFilesTotal} documents saved`);
         }
     }
 </script>

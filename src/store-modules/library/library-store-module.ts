@@ -13,40 +13,47 @@ import Facet from '@/models/facet';
 import FacetValue from '@/models/facet-value';
 import FacetsCreator from '@/services/facets-creator';
 
-import MAIN_STORE_ACTION_TYPE from '@/main-store/main-store-action-type';
-import MAIN_STORE_GETTER_TYPE from '@/main-store/main-store-getter-type';
-import MAIN_STORE_MUTATION_TYPE from '@/main-store/main-store-mutation-type';
+import LIBRARY_STORE_MODULE_ACTION_TYPE from '@/store-modules/library/library-store-module-action-type';
+import LIBRARY_STORE_MODULE_GETTER_TYPE from '@/store-modules/library/library-store-module-getter-type';
+import LIBRARY_STORE_MODULE_MUTATION_TYPE from '@/store-modules/library/library-store-module-mutation-type';
+
+import LIST_STORE_MODULE_ACTION_TYPE from '@/store-modules/list/lists-store-module-action-type';
 
 @Module
-export default class MainStoreModule extends VuexModule {
+export default class LibraryStoreModule extends VuexModule {
     public documents: Document[] = [];
     public facets: Facet[] = [];
     public facetValuesSelected: FacetValue[] = [];
 
-    get [MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS](): Document[] {
+    get [LIBRARY_STORE_MODULE_GETTER_TYPE.DOCUMENT_GET_ALL](): Document[] {
         return this.documents;
     }
 
-    get [MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS](): Facet[] {
+    get [LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_GET_ALL](): Facet[] {
         return this.facets;
     }
 
-    get [MAIN_STORE_GETTER_TYPE.GET_ALL_FACET_VALUES_SELECTED](): FacetValue[] {
+    get [LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_VALUE_SELECTED_GET_ALL](): FacetValue[] {
         return this.facetValuesSelected;
     }
 
     @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.ADD_FACET_VALUE_SELECTED](facetValue: FacetValue): void {
-        this.facetValuesSelected.push(facetValue);
+    public [LIBRARY_STORE_MODULE_MUTATION_TYPE.DOCUMENT_SET_ALL](documents: Document[]): void {
+        this.documents = documents;
     }
 
     @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS](documents: Document[]): void {
+    public [LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_CALCULATE_ALL](documents: Document[]): void {
         this.facets = FacetsCreator.init(documents);
     }
 
     @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.REMOVE_FACET_VALUE_SELECTED](index: number): void {
+    public [LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_VALUE_ADD_SELECTED](facetValue: FacetValue): void {
+        this.facetValuesSelected.push(facetValue);
+    }
+
+    @Mutation
+    public [LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_VALUE_REMOVE_SELECTED](index: number): void {
         if ( index < 0 || index >= this.facetValuesSelected.length ) {
             return;
         }
@@ -54,28 +61,8 @@ export default class MainStoreModule extends VuexModule {
         this.facetValuesSelected.splice(index, 1);
     }
 
-    @Mutation
-    public [MAIN_STORE_MUTATION_TYPE.SET_DOCUMENTS](documents: Document[]): void {
-        this.documents = documents;
-    }
-
     @Action
-    public async [MAIN_STORE_ACTION_TYPE.CREATE_DOCUMENT](document: Document): Promise<Document> {
-        const [createDocumentError, createDocumentResult] = await to( DocumentRepository.create(document) );
-
-        if (createDocumentResult) {
-            throw createDocumentResult;
-        }
-
-        if (!createDocumentResult) {
-            throw new Error('createDocumentResult undefined')
-        }
-
-        return createDocumentResult;
-    }
-
-    @Action
-    public async [MAIN_STORE_ACTION_TYPE.CREATE_DOCUMENTS](documents: Document[]): Promise<Document[]> {
+    public async [LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_CREATE_MANY](documents: Document[]): Promise<Document[]> {
         const [createDocumentsError, createDocumentsResult] = await to<Document[]>( DocumentRepository.createMany(documents) );
 
         if (createDocumentsError) {
@@ -83,14 +70,29 @@ export default class MainStoreModule extends VuexModule {
         }
 
         if (!createDocumentsResult) {
-            throw new Error('createDocumentsResult undefined')
+            throw new Error('createDocumentsResult undefined');
         }
 
         return createDocumentsResult;
     }
 
     @Action
-    public async [MAIN_STORE_ACTION_TYPE.DELETE_DOCUMENT](documentToDelete: Document): Promise<Document> {
+    public async [LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_CREATE_ONE](document: Document): Promise<Document> {
+        const [createDocumentError, createDocumentResult] = await to( DocumentRepository.create(document) );
+
+        if (createDocumentResult) {
+            throw createDocumentResult;
+        }
+
+        if (!createDocumentResult) {
+            throw new Error('createDocumentResult undefined');
+        }
+
+        return createDocumentResult;
+    }
+
+    @Action
+    public async [LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_DELETE_ONE](documentToDelete: Document): Promise<Document> {
         const [deleteError, deleteResult] = await to<Document>( DocumentRepository.delete(documentToDelete) );
 
         if (deleteError) {
@@ -112,16 +114,16 @@ export default class MainStoreModule extends VuexModule {
                 documentList.removeDocumentIds(documentToDelete.id);
             }
 
-            await DocumentListRepository.updateMany(documentLists);
+            await this.context.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_MANY, documentLists);
         }
 
-        await this.context.dispatch(MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS);
+        await this.context.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL);
 
         return documentToDelete;
     }
 
     @Action
-    public async [MAIN_STORE_ACTION_TYPE.READ_ALL_DOCUMENTS](): Promise<Document[]> {
+    public async [LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL](): Promise<Document[]> {
         let [readAllError, readAllResult] = await to<Document[]>( DocumentRepository.readAll() );
 
         if (readAllError) {
@@ -133,15 +135,15 @@ export default class MainStoreModule extends VuexModule {
         }
 
         if (this.facetValuesSelected.length === 0) {
-            this.context.commit(MAIN_STORE_MUTATION_TYPE.SET_DOCUMENTS, readAllResult);
-            this.context.commit(MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS, readAllResult);
+            this.context.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.DOCUMENT_SET_ALL, readAllResult);
+            this.context.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_CALCULATE_ALL, readAllResult);
             return readAllResult;
         }
 
         const filtersAvailable: { [key: string]: (documents: Document[], filterCriteria: number | string | Author) => Document[] } = {
             'author': (documents: Document[], filterCriteria: number | string | Author): Document[] => {
                 return documents.filter((document: Document) => {
-                    return document.hasAuthor(filterCriteria as Author);
+                    return document.hasAuthor((filterCriteria as Author).toString());
                 });
             },
             'publicationYear': (documents: Document[], filterCriteria: number | string | Author): Document[] => {
@@ -155,14 +157,14 @@ export default class MainStoreModule extends VuexModule {
             readAllResult = filtersAvailable[facetValueSelected.facetName](readAllResult, facetValueSelected.name);
         }
 
-        this.context.commit(MAIN_STORE_MUTATION_TYPE.SET_DOCUMENTS, readAllResult);
-        this.context.commit(MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS, readAllResult);
+        this.context.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.DOCUMENT_SET_ALL, readAllResult);
+        this.context.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_CALCULATE_ALL, readAllResult);
 
         return readAllResult;
     }
 
     @Action
-    public async [MAIN_STORE_ACTION_TYPE.UPDATE_DOCUMENT](document: Document): Promise<Document> {
+    public async [LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_UPDATE_ONE](document: Document): Promise<Document> {
         const [updateError, updateResult] = await to<Document>( DocumentRepository.update(document) );
 
         if (updateError) {
@@ -175,7 +177,7 @@ export default class MainStoreModule extends VuexModule {
             throw new Error('updateResult undefined');
         }
 
-        this.context.commit(MAIN_STORE_MUTATION_TYPE.CALCULATE_FACETS, this.documents);
+        this.context.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_CALCULATE_ALL, this.documents);
 
         return updateResult;
     }
