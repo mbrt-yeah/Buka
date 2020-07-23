@@ -35,14 +35,14 @@
                     <editable-textfield
                         v-bind:customClasses="'list-name'"
                         v-bind:hideLabel="true"
-                        v-bind:isStandalone="true"
+                        v-bind:isEditMode="false"
                         v-bind:label="$t('List Name')"
                         v-bind:name="`list-name-${listFocusedIndex}`"
                         v-bind:showEditButton="true"
                         v-bind:showDeleteButton="false"
                         v-bind:value="lists[listFocusedIndex].name"
-                        v-on:save="onListNameChangeSave(listFocusedIndex, $event)"
-                        v-on:valuechange="onListNameChange(listFocusedIndex, $event)"
+                        v-on:save:value="onListNameChangeSave(listFocusedIndex, $event)"
+                        v-on:update:value="onListNameChange(listFocusedIndex, $event)"
                     />
 
                     <div class="button-group">
