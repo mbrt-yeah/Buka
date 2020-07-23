@@ -3,8 +3,15 @@
         <label v-if="!hideLabel" v-bind:for="id" class="label">{{ label }}:</label>
 
         <div class="textfield">
-            <div v-if="isEditMode" class="edit-mode">
-                <input type="text" v-bind:id="id" v-bind:name="name" v-bind:placeholder="label" v-model="value" />
+            <div v-if="isEditModeInternal" class="edit-mode">
+                <input 
+                    type="text"
+                    v-bind:id="id"
+                    v-bind:name="name"
+                    v-bind:placeholder="label" 
+                    v-bind:value="valueInternal"
+                    v-on:keyup="onValueChange($event)"
+                />
 
                 <button v-if="showEditButton" type="button" class="button button-small button-text button-icon-only button-positive" @click="onSaveClick">
                     <span class="iconmonstr iconmonstr-buka-save"></span>
@@ -19,11 +26,11 @@
 
             <div v-else class="display-mode">
                 <template v-if="displayValueAs === 'button'">
-                    <button @click="onDisplayedValueClick" type="button" class="button button-small button-text displayed-value">{{ value }}</button>
+                    <button @click="onDisplayedValueClick" type="button" class="button button-small button-text displayed-value">{{ valueInternal }}</button>
                 </template>
 
                 <template v-else>
-                    <p class="displayed-value" v-if="value">{{value}}</p>
+                    <p class="displayed-value" v-if="valueInternal">{{ valueInternal }}</p>
                     <p class="displayed-value" v-else>{{ placeholder }}</p>
                 </template>
 
@@ -82,13 +89,18 @@
 
         public id: string;
 
+        public isEditModeInternal: Boolean;
+        public valueInternal: string | number;
+
         public constructor() {
             super();
             this.id = uuid.generate();
+            this.isEditModeInternal = this.isEditMode || false;
+            this.valueInternal = this.value;
         }
 
         public onCancelClick() {
-            this.isEditMode = false;
+            this.isEditModeInternal = false;
         }
 
         public onDeleteClick() {
@@ -100,17 +112,23 @@
         }
 
         public onEditClick() {
-            this.isEditMode = true;
+            this.isEditModeInternal = true;
+            console.log(this.isEditModeInternal);
+        }
+
+        @Watch('isEditMode')
+        public onEditModeChange() {
+            this.isEditModeInternal = this.isEditMode;
         }
 
         public onSaveClick() {
-            this.$emit('update:value', new EditableTextfieldComponentEventChange(this.name, this.value));
-            this.isEditMode = false;
+            this.$emit('save:value', new EditableTextfieldComponentEventChange(this.name, this.valueInternal));
+            this.isEditModeInternal = false;
         }
 
-        @Watch('value')
-        public onValueChange() {
-            this.$emit('update:value', new EditableTextfieldComponentEventChange(this.name, this.value));
+        public onValueChange(event: any) {
+            this.valueInternal = event.target.value
+            this.$emit('update:value', new EditableTextfieldComponentEventChange(this.name, this.valueInternal));
         }
     }
 </script>
