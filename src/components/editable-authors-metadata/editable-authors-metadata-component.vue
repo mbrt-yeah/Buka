@@ -12,7 +12,7 @@
                         v-bind:isEditMode="isEditMode"
                         v-bind:showEditButton="false"
                         v-bind:showDeleteButton="false"
-                        @change="onEditableTextFieldChange(index, $event)"
+                        v-on:update:value="onEditableTextFieldChange(index, $event)"
                     />
                     
                     <editable-textfield
@@ -24,7 +24,7 @@
                         v-bind:isEditMode="isEditMode"
                         v-bind:showEditButton="false"
                         v-bind:showDeleteButton="false"
-                        @change="onEditableTextFieldChange(index, $event)"
+                        v-on:update:value="onEditableTextFieldChange(index, $event)"
                     />
                     
                     <editable-textfield
@@ -36,7 +36,7 @@
                         v-bind:isEditMode="isEditMode"
                         v-bind:showEditButton="false"
                         v-bind:showDeleteButton="false"
-                        @change="onEditableTextFieldChange(index, $event)"
+                        v-on:update:value="onEditableTextFieldChange(index, $event)"
                     />
 
                     <button v-if="isEditMode" type="button" class="button button-small button-icon-only button-text button-negative" @click="onDeleteAuthorClick(index)">
@@ -56,9 +56,9 @@
     import { Component, Prop, Vue } from 'vue-property-decorator';
     import uuid from 'short-uuid';
     import Author from '@/models/author';
-    import EditableAuthorsMetadataChangeEvent from '@/components/editable-authors-metadata-change-event';
-    import EditableTextfield from '@/components/editable-textfield.vue';
-    import EditableTextfieldChangeEvent from '@/components/editable-textfield-change-event';
+    import EditableAuthorsMetadataComponentEventChange from '@/components/editable-authors-metadata/editable-authors-metadata-event-change';
+    import EditableTextfield from '@/components/editable-textfield/editable-textfield-component.vue';
+    import EditableTextFieldComponentEventChange from '@/components/editable-textfield/editable-textfield-component-event-change.ts';
 
     @Component({
         components: {
@@ -101,8 +101,8 @@
             this.isEditMode = false;
         }
 
-        public onEditableTextFieldChange(authorPosition: number, event: EditableTextfieldChangeEvent) {
-            this.$emit('change', new EditableAuthorsMetadataChangeEvent(authorPosition, event.name, event.value));
+        public onEditableTextFieldChange(authorPosition: number, event: EditableTextFieldComponentEventChange) {
+            this.$emit('update:value', new EditableAuthorsMetadataComponentEventChange(authorPosition, event.name, event.value + ''));
         }
     }
 </script>

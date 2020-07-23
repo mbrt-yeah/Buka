@@ -73,22 +73,23 @@ export default class LibraryStoreModule extends VuexModule {
             throw new Error('createDocumentsResult undefined');
         }
 
-        return createDocumentsResult;
+        this.context.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.DOCUMENT_SET_ALL, documents);
+        return documents;
     }
 
     @Action
     public async [LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_CREATE_ONE](document: Document): Promise<Document> {
         const [createDocumentError, createDocumentResult] = await to( DocumentRepository.create(document) );
 
-        if (createDocumentResult) {
-            throw createDocumentResult;
+        if (createDocumentError) {
+            throw createDocumentError;
         }
 
         if (!createDocumentResult) {
             throw new Error('createDocumentResult undefined');
         }
 
-        return createDocumentResult;
+        return document;
     }
 
     @Action
@@ -177,7 +178,7 @@ export default class LibraryStoreModule extends VuexModule {
             throw new Error('updateResult undefined');
         }
 
-        this.context.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_CALCULATE_ALL, this.documents);
+        await this.context.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL);
 
         return updateResult;
     }

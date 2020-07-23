@@ -48,9 +48,9 @@
         <document-preview-component 
             v-if="showDocumentPreview" 
             v-bind:document="documents[documentFocusedIndex]"
-            v-on:documentAddToLists="onDocumentAddToLists($event.document, $event.lists)"
-            v-on:documentDelete="onDocumentDelete(documentFocusedIndex, $event)"
-            v-on:documentUpdate="onDocumentUpdate(documentFocusedIndex, $event)"
+            v-on:addToList:document="onDocumentAddToLists($event)"
+            v-on:delete:document="onDocumentDelete($event, documentFocusedIndex)"
+            v-on:update:document="onDocumentUpdate($event, documentFocusedIndex)"
         />
     </div>
 </template>
@@ -66,7 +66,10 @@
     import DOCUMENT_SHELF_COMPONENT_STORE_MODULE_ACTION_TYPE from '@/components/document-shelf/document-shelf-component-store-module-action-type';
     import DOCUMENT_SHELF_COMPONENT_STORE_MODULE_GETTER_TYPE from '@/components/document-shelf/document-shelf-component-store-module-getter-type';
     import DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE from '@/components/document-shelf/document-shelf-component-store-module-mutation-type';
-    import DocumentPreviewComponent from '@/components/document-preview-component.vue';
+    import DocumentPreviewComponent from '@/components/document-preview/document-preview-component.vue';
+    import DocumentPreviewComponentEventAddToList from '@/components/document-preview/document-preview-component-event-add-to-list.ts';
+    import DocumentShelfComponentEventDelete from '@/components/document-shelf/document-shelf-component-event-delete';
+    import DocumentShelfComponentEventUpdate from '@/components/document-shelf/document-shelf-component-event-update';
     import DocumentShelfComponentStoreModule from '@/components/document-shelf/document-shelf-component-store-module';
 
     import LIST_DISPLAY_OPTION from '@/constants/list-display-option';
@@ -121,29 +124,28 @@
             this.listDisplayOption = listDisplayOption
         }
 
-        public async onDocumentAddToLists(document: Document, documentLists: DocumentList[]): Promise<void> {
-            const l = documentLists.length;
+        public async onDocumentAddToLists(event: DocumentPreviewComponentEventAddToList): Promise<void> {
+            const l = event.documentLists.length;
 
             if (!document || l  === 0) {
                 return;
             }
 
-            for (const documentList of documentLists) {
-               documentList.documentIds.push(document.id);
+            for (const documentList of event.documentLists) {
+               documentList.documentIds.push(event.document.id);
             }
 
-            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_MANY, documentLists);
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_MANY, event.documentLists);
 
-            NotificationService.success(`Document &raquo;${document.metadata.title}&laquo; has been added to &raquo;${l}&laquo; lists.`);
+            NotificationService.success(`Document &raquo;${event.document.metadata.title}&laquo; has been added to &raquo;${l}&laquo; lists.`);
         }
 
         public onDocumentClick(index: number): void {
             this.documentFocusedIndex = index;
         }
 
-        public onDocumentDelete(documentFocusedIndex: number, document: Document): void {
-            console.log(documentFocusedIndex);
-            console.log(document);
+        public onDocumentDelete(document: Document, documentFocusedIndex: number): void {
+            this.$emit('delete:document', new DocumentShelfComponentEventDelete(document, documentFocusedIndex));
         }
 
         @Watch('documents')
@@ -156,9 +158,8 @@
             this.$store.commit(DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE.LIST_SORT);
         }
 
-        public onDocumentUpdate(documentFocusedIndex: number, document: Document): void {
-            console.log(documentFocusedIndex);
-            console.log(document);
+        public onDocumentUpdate(document: Document, documentFocusedIndex: number): void {
+            this.$emit('update:document', new DocumentShelfComponentEventUpdate(document, documentFocusedIndex));
         }
     }
 </script>

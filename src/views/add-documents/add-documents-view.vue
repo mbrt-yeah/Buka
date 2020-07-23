@@ -2,7 +2,7 @@
     <div class="view" id="add-document-view-component" >
         <div class="view-content">
             <vue-auto-dropzone
-                :options="dropzoneOptions"
+                v-bind:options="dropzoneOptions"
                 :include-styling="false"
                 :destroyDropzone="true"
                 @addedfile="onDocumentsAdded"
@@ -13,11 +13,17 @@
             <div class="buttons">
                 <button 
                     type="button" 
-                    class="button button-small button-text button-positive" @click="onDocumentsSaveClick">
+                    class="button button-small button-text button-positive" 
+                    v-on:click="onDocumentsSaveClick"
+                >
                     <span class="iconmonstr iconmonstr-buka-save"></span>
                     {{ $t(`Save ${dropzoneFilesTotal} Documents`) }}
                 </button>
-                <button type="button" class="button button-small button-text" @click="onDocumentsCancelClick">
+                <button 
+                    type="button"
+                    class="button button-small button-text" 
+                    v-on:click="onDocumentsCancelClick"
+                >
                     <span class="iconmonstr iconmonstr-buka-x-mark"></span>
                     {{ $t('Cancel') }}
                 </button>
@@ -26,7 +32,7 @@
             <document-shelf-component
                 v-if="documents.length > 0"
                 v-bind:documents="documents"
-                v-bind:showDocumentPreview="true"
+                v-bind:showDocumentPreview="false"
             />
         </div>
     </div>
@@ -38,17 +44,17 @@
     import VueAutoDropzone from 'vue-auto-dropzone';
     import to from 'await-to-js';
 
+    import NewDocumentHandlerPDF from '@/new-document-handlers/new-document-handler-pdf';
     import Document from '@/models/document';
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
+    import NotificationService from '@/services/notification-service';
+
     import LIBRARY_STORE_MODULE_ACTION_TYPE from '@/store-modules/library/library-store-module-action-type';
-    import NewDocumentHandlerPDF from '@/new-document-handlers/new-document-handler-pdf';
-    import NotifictionService from '@/services/notification-service';
+    import LIBRARY_STORE_MODULE_GETTER_TYPE from '@/store-modules/library/library-store-module-getter-type';
+    import LIBRARY_STORE_MODULE_MUTATION_TYPE from '@/store-modules/library/library-store-module-mutation-type';
 
     @Component({
-        components: {
-            DocumentShelfComponent,
-            VueAutoDropzone
-        }
+        components: {VueAutoDropzone, DocumentShelfComponent}
     })
     export default class AddDocumentsView extends Vue {
         public documents: Document[];
@@ -132,11 +138,11 @@
                 throw new Error('documents undefined');
             }
 
-            this.documents = documents;
+            this.documents = documentsNew;
             this.dropzone.removeAllFiles(true);
             this.dropzoneFilesTotal = 0;
 
-            NotifictionService.success(`${acceptedFilesTotal} documents saved`);
+            NotificationService.success(`${acceptedFilesTotal} documents saved`);
         }
     }
 </script>

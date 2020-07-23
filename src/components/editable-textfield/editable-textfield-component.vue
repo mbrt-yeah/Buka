@@ -45,7 +45,8 @@
     import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
     import uuid from 'short-uuid';
     import * as util from 'util';
-    import EditableTextfieldChangeEvent from '@/components/editable-textfield-change-event';
+
+    import EditableTextfieldComponentEventChange from '@/components/editable-textfield/editable-textfield-component-event-change';
 
     @Component
     export default class EditableTextfield extends Vue {
@@ -103,13 +104,13 @@
         }
 
         public onSaveClick() {
-            this.$emit('save', new EditableTextfieldChangeEvent(this.name, this.value));
+            this.$emit('update:value', new EditableTextfieldComponentEventChange(this.name, this.value));
             this.isEditMode = false;
         }
 
         @Watch('value')
         public onValueChange() {
-            this.$emit('valuechange', new EditableTextfieldChangeEvent(this.name, this.value));
+            this.$emit('update:value', new EditableTextfieldComponentEventChange(this.name, this.value));
         }
     }
 </script>
