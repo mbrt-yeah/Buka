@@ -1,4 +1,4 @@
-export default class EditableAuthorsMetadataChangeEvent {
+export default class EditableAuthorsMetadataComponentEventChange {
     public position: number;
     public key: string;
     public value: string;

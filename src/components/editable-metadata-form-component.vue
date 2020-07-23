@@ -8,7 +8,7 @@
                     v-bind:customClasses="`${propertyName}`"
                     v-bind:isEditMode="isEditMode"
                     v-bind:label="propertyName"
-                    @change="onEditableAuthorsMetadataChange"
+                    v-on:update:value="onValueUpdateAuthor($event)"
                 />
                 <editable-textfield
                     v-if="propertyValue.type === 'number' || propertyValue.type === 'string'"
@@ -20,7 +20,7 @@
                     v-bind:placeholder="'-'"
                     v-bind:showEditButton="false"
                     v-bind:showDeleteButton="false"
-                    @change="onEditableTextFieldChange"
+                    v-on:update:value="onValueUpdate($event)"
                 />
             </div>
         </form>
@@ -31,10 +31,10 @@
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import Configuration from '@/configuration';
     import Metadata from '@/models/metadata';
-    import EditableAuthorsMetadata from '@/components/editable-authors-metadata-component.vue';
-    import EditableAuthorsMetadataChangeEvent from '@/components/editable-authors-metadata-change-event';
-    import EditableTextfield from '@/components/editable-textfield.vue';
-    import EditableTextfieldChangeEvent from '@/components/editable-textfield-change-event.vue';
+    import EditableAuthorsMetadata from '@/components/editable-authors-metadata/editable-authors-metadata-component.vue';
+    import EditableAuthorsMetadataComponentEventChange from '@/components/editable-authors-metadata/editable-authors-metadata-event-change';
+    import EditableTextfield from '@/components/editable-textfield/editable-textfield-component.vue';
+    import EditableTextFieldComponentEventChange from '@/components/editable-textfield/editable-textfield-component-event-change.ts';
 
     @Component({
         components: {
@@ -56,11 +56,11 @@
             this.reorderMetadataFields();
         }
 
-        public onEditableAuthorsMetadataChange(event: EditableAuthorsMetadataChangeEvent) {
+        public onValueUpdateAuthor(event: EditableAuthorsMetadataComponentEventChange) {
             this.formData.authors[event.position][event.key] = event.value;
         }
 
-        public onEditableTextFieldChange(event: EditableTextfieldChangeEvent) {
+        public onValueUpdate(event: EditableTextFieldComponentEventChange): void {
             this.formData[event.name] = event.value;
         }
 

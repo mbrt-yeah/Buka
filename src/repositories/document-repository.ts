@@ -17,21 +17,13 @@ export default class DocumentRepository {
     }
 
     public static async createMany(documents: Document[]): Promise<Document[]> {
-        return new Promise((resolve, reject) => {
-            const documentsCreated = Database.instance().getCollection<Document>('documents').insert(documents);
+        const documentsCreated = Database.instance().getCollection<Document>('documents').insert(documents);
 
-            if (!documentsCreated) {
-                return reject( new Error('[Document Repository] Something went wrong') );
-            }
+        if (!documentsCreated) {
+            return Promise.reject( new Error('[Document Repository] Something went wrong') );
+        }
 
-            const finalDocuments: Document[] = [];
-
-            for (const document of documentsCreated) {
-                finalDocuments.push( plainToClass(Document, document) );
-            }
-
-            return resolve(finalDocuments);
-        });
+        return Promise.resolve(documents);
     }
 
     public static async read(id: string): Promise<Document> {

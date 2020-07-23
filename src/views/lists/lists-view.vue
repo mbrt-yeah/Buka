@@ -65,6 +65,8 @@
                     v-if="listFocusedDocuments.length > 0"
                     v-bind:documents="listFocusedDocuments"
                     v-bind:showDocumentPreview="true"
+                    v-on:delete:document="onDocumentDelete($event)"
+                    v-on:update:document="onDocumentUpdate($event)"
                 />
             </template>
         </div>
@@ -88,11 +90,17 @@
 
     import DeleteSomething from '@/components/delete-something-component.vue';
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
-    import EditableTextfield from '@/components/editable-textfield.vue';
-    import EditableTextfieldChangeEvent from '@/components/editable-textfield-change-event.vue';
+    import DocumentShelfComponentEventDelete from '@/components/document-shelf/document-shelf-component-event-delete';
+    import DocumentShelfComponentEventUpdate from '@/components/document-shelf/document-shelf-component-event-update';
+    import EditableTextfield from '@/components/editable-textfield/editable-textfield-component.vue';
+    import EditableTextFieldComponentEventChange from '@/components/editable-textfield/editable-textfield-component-event-change.ts';
     import LabelComponent from '@/components/label-component.vue';
     import ModelDataList from '@/components/model-data-list-component.vue';
     import SearchDropdownComponent from '@/components/search-dropdown-component.vue';
+
+    import LIBRARY_STORE_MODULE_ACTION_TYPE from '@/store-modules/library/library-store-module-action-type';
+    import LIBRARY_STORE_MODULE_GETTER_TYPE from '@/store-modules/library/library-store-module-getter-type';
+    import LIBRARY_STORE_MODULE_MUTATION_TYPE from '@/store-modules/library/library-store-module-mutation-type';
 
     import LIST_STORE_MODULE_ACTION_TYPE from '@/store-modules/list/lists-store-module-action-type';
     import LIST_STORE_MODULE_GETTER_TYPE from '@/store-modules/list/lists-store-module-getter-type';
@@ -170,6 +178,23 @@
             this.$modal.hide('data-list-documents');
         }
 
+        public async onDocumentDelete(event: DocumentShelfComponentEventDelete) {
+            await this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_DELETE_ONE, event.document);
+
+            NotifcationService.success(`Document deleted`);
+
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL_DOCUMENTS, this.listFocusedIndex);
+            this.listFocusedDocuments = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS];
+        }
+
+        public async onDocumentUpdate(event: DocumentShelfComponentEventUpdate) {
+            await this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_UPDATE_ONE, event.document);
+
+            NotifcationService.success(`Document updated`);
+
+            this.listFocusedDocuments = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS];
+        }
+
         public onListAddNewClick(): void {
            this.addNewListMode = true;
         }
@@ -186,13 +211,13 @@
             NotifcationService.success(`List with name &raquo;${listToDelete.name}&laquo; deleted`);
         }
 
-        public async onListNameChange(index: number, event: EditableTextfieldChangeEvent): Promise<void> {
-            this.lists[index].name = event.value;
+        public async onListNameChange(index: number, event: EditableTextFieldComponentEventChange): Promise<void> {
+            this.lists[index].name = event.value + '';
         }
 
-        public async onListNameChangeSave(index: number, event: EditableTextfieldChangeEvent): Promise<void> {
+        public async onListNameChangeSave(index: number, event: EditableTextFieldComponentEventChange): Promise<void> {
             const listToUpdate = this.lists[index].clone();
-            listToUpdate.name = event.value;
+            listToUpdate.name = event.value + '';
 
             await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_ONE, listToUpdate);
 

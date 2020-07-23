@@ -29,6 +29,8 @@
                 v-if="documents.length > 0"
                 v-bind:documents="documents"
                 v-bind:showDocumentPreview="true"
+                v-on:delete:document="onDocumentDelete($event)"
+                v-on:update:document="onDocumentUpdate($event)"
             />
         </div>
     </div>
@@ -43,9 +45,11 @@
     import FacetValue from '@/models/facet-value';
 
     import DocumentShelfComponent from '@/components/document-shelf/document-shelf-component.vue';
+    import DocumentShelfComponentEventDelete from '@/components/document-shelf/document-shelf-component-event-delete';
+    import DocumentShelfComponentEventUpdate from '@/components/document-shelf/document-shelf-component-event-update';
     import LabelComponent from '@/components/label-component.vue';
 
-    import NotifictionService from '@/services/notification-service';
+    import NotificationService from '@/services/notification-service';
 
     import LIBRARY_STORE_MODULE_ACTION_TYPE from '@/store-modules/library/library-store-module-action-type';
     import LIBRARY_STORE_MODULE_GETTER_TYPE from '@/store-modules/library/library-store-module-getter-type';
@@ -86,33 +90,23 @@
             this.facetValuesSelected = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_VALUE_SELECTED_GET_ALL];
         }
 
-        /*
-        public async onDocumentDelete(payload: any[]) {
-            const index: number = payload[0];
-            const document: Document = payload[1];
+        public async onDocumentDelete(event: DocumentShelfComponentEventDelete) {
+            await this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_DELETE_ONE, event.document);
 
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.DELETE_DOCUMENT, document);
+            NotificationService.success(`Document deleted`);
 
-            NotifictionService.success(`Document deleted`);
-
-            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
-            this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
+            this.documents = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.DOCUMENT_GET_ALL];
+            this.facets = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_GET_ALL];
         }
-        */
 
-        /*
-        public async onDocumentUpdate(payload: any[]) {
-            const index: number = payload[0];
-            const document: Document = payload[1];
+        public async onDocumentUpdate(event: DocumentShelfComponentEventUpdate) {
+            await this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_UPDATE_ONE, event.document);
 
-            await this.$store.dispatch(MAIN_STORE_ACTION_TYPE.UPDATE_DOCUMENT, document);
+            NotificationService.success(`Document updated`);
 
-            NotifictionService.success(`Document updated`);
-
-            this.documents = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_DOCUMENTS];
-            this.facets = this.$store.getters[MAIN_STORE_GETTER_TYPE.GET_ALL_FACETS];
+            this.documents = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.DOCUMENT_GET_ALL];
+            this.facets = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.FACET_GET_ALL];
         }
-        */
 
         public async onFacetValueClick(facetValue: FacetValue): Promise<void> {
             this.$store.commit(LIBRARY_STORE_MODULE_MUTATION_TYPE.FACET_VALUE_ADD_SELECTED, facetValue);

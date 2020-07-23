@@ -80,6 +80,7 @@
     import DocumentList from '@/models/document-list';
     import Metadata from '@/models/metadata';
 
+    import DocumentPreviewComponentEventAddToList from '@/components/document-preview/document-preview-component-event-add-to-list.ts';
     import EditableMetadataForm from '@/components/editable-metadata-form-component.vue'
     import ModelDataList from '@/components/model-data-list-component.vue';
 
@@ -119,10 +120,9 @@
         }
 
         public async onAddToListSave(documentLists: DocumentList[]): Promise<void> {
-            this.$emit('documentAddToLists', {
-                document: this.document,
-                lists: documentLists
-            });
+            if (this.document) {
+                this.$emit('addToList:document', new DocumentPreviewComponentEventAddToList(this.document, documentLists));
+            }
 
             this.$modal.hide('data-list-document-lists');
         }
@@ -140,7 +140,7 @@
         }
 
         public async onDeleteYesClick(): Promise<void> {
-            this.$emit('documentDelete', this.document);
+            this.$emit('delete:document', this.document);
             this.isDeleteMode = false;
         }
 
@@ -149,7 +149,7 @@
         }
 
         public async onSaveClick(): Promise<void> {
-            this.$emit('documentUpdate', this.document);
+            this.$emit('update:document', this.document);
             this.isEditMode = false;
         }
     }
