@@ -10,7 +10,7 @@
                     v-bind:name="name"
                     v-bind:placeholder="label" 
                     v-bind:value="valueInternal"
-                    v-on:keyup="onValueChange($event)"
+                    v-on:keyup="onInputKeyUp($event)"
                 />
 
                 <button v-if="showEditButton" type="button" class="button button-small button-text button-icon-only button-positive" @click="onSaveClick">
@@ -113,7 +113,6 @@
 
         public onEditClick() {
             this.isEditModeInternal = true;
-            console.log(this.isEditModeInternal);
         }
 
         @Watch('isEditMode')
@@ -126,9 +125,14 @@
             this.isEditModeInternal = false;
         }
 
-        public onValueChange(event: any) {
+        public onInputKeyUp(event: any) {
             this.valueInternal = event.target.value
             this.$emit('update:value', new EditableTextfieldComponentEventChange(this.name, this.valueInternal));
+        }
+
+        @Watch('value')
+        public onValueChange() {
+            this.valueInternal = this.value;
         }
     }
 </script>
