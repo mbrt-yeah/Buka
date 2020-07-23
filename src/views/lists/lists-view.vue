@@ -226,10 +226,9 @@
 
         public async onListNameClick(index: number, event: string): Promise<void> {
             this.$store.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_INDEX, index);
-            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL_DOCUMENTS, index);
-
-            this.listFocusedDocuments = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS];
             this.listFocusedIndex = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_INDEX];
+            await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL_DOCUMENTS, this.listFocusedIndex);
+            this.listFocusedDocuments = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS];
         }
 
         public async onListNewSaveClick(): Promise<void> {

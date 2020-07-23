@@ -49,7 +49,7 @@ export default class ListStoreModule extends VuexModule {
         const l = this.lists.length;
 
         for (i; i < l; i++) {
-            if (this.lists[i].id === documentListNew.id) {
+            if (this.lists[i].id !== documentListNew.id) {
                 continue;
             }
 
