@@ -1,14 +1,28 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
+import VueRouter, { Route } from 'vue-router';
 
-import addDocumentsViewRoutes from '@/views/add-documents/add-documents-view-routes';
-import libraryViewRoutes from '@/views/library/library-view-routes';
-import listsViewRoutes from '@/views/lists/lists-view-routes';
+import AddDocumentsView from '@/views/add-documents-view.vue';
+import LibraryView from '@/views/library-view.vue';
+import ListsView from '@/views/lists-view.vue';
 
 const router: VueRouter = new VueRouter();
-router.addRoutes(addDocumentsViewRoutes);
-router.addRoutes(libraryViewRoutes);
-router.addRoutes(listsViewRoutes);
+
+const routes = [
+    {
+        path: '/add-document',
+        component: AddDocumentsView
+    },
+    {
+        path: '/library',
+        component: LibraryView
+    },
+    {
+        path: '/lists',
+        component: ListsView
+    }
+];
+
+router.addRoutes(routes);
 
 Vue.use(VueRouter);
 

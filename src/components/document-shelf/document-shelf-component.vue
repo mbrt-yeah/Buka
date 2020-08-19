@@ -30,7 +30,9 @@
                     @click="onDocumentClick(index)"
                     :class="[(index === documentFocusedIndex) ? 'selected' : '']"
                 >
-                    <img :src="document.coverImage.getSrcAttributeValue()" :alt="`Cover Image of ${document.metadata.title}`" />
+                    <div class="img-wrapper">
+                        <img :src="document.coverImage.getSrcAttributeValue()" :alt="`Cover Image of ${document.metadata.title}`" />
+                    </div>
                     <ul class="metadata">
                         <li class="title" v-if="document.metadata.title">{{document.metadata.title}}</li>
                         <li class="description" v-if="document.metadata.description">{{document.metadata.description}}</li>
@@ -48,7 +50,7 @@
         <document-preview-component 
             v-if="showDocumentPreview" 
             v-bind:document="documents[documentFocusedIndex]"
-            v-on:addToList:document="onDocumentAddToLists($event)"
+            v-on:addtolists:document="onDocumentAddToLists($event)"
             v-on:delete:document="onDocumentDelete($event, documentFocusedIndex)"
             v-on:update:document="onDocumentUpdate($event, documentFocusedIndex)"
         />
@@ -119,25 +121,26 @@
                 || Configuration.instance().documentSorting.sortOptionDefault;
         }
 
+        public beforeUpdate() {
+            
+        }
+
+        public updated() {
+        }
+
         public onListDisplayOptionClick(listDisplayOption: LIST_DISPLAY_OPTION): void {
             this.$store.commit(DOCUMENT_SHELF_COMPONENT_STORE_MODULE_MUTATION_TYPE.LIST_DISPLAY_OPTION_SET, listDisplayOption);
             this.listDisplayOption = listDisplayOption
         }
 
         public async onDocumentAddToLists(event: DocumentPreviewComponentEventAddToList): Promise<void> {
-            const l = event.documentLists.length;
-
-            if (!document || l  === 0) {
-                return;
-            }
-
             for (const documentList of event.documentLists) {
                documentList.documentIds.push(event.document.id);
             }
 
             await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_MANY, event.documentLists);
 
-            NotificationService.success(`Document &raquo;${event.document.metadata.title}&laquo; has been added to &raquo;${l}&laquo; lists.`);
+            NotificationService.success(`Document &raquo;${event.document.metadata.title}&laquo; has been added to &raquo;${event.documentLists.length}&laquo; lists.`);
         }
 
         public onDocumentClick(index: number): void {

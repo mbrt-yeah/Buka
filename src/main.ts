@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import allSettled from 'promise.allsettled';
 import Vue from 'vue';
-import VueJsModal from 'vue-js-modal'
+import VueJsModal from 'vue-js-modal';
 import VueNotifications from 'vue-notification';
 
 import Database from '@/database';
-import i18n from '@/i18n';
-import MainView from '@/views/main/main-view.vue';
+import i18n from '@/localization';
+import MainView from '@/views/main-view.vue';
 import router from '@/router';
 import store from '@/store';
 

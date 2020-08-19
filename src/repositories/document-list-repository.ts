@@ -1,26 +1,35 @@
 import { plainToClass } from '@marcj/marshal';
 
-import DocumentList from '@/models/document-list';
 import Database from '@/database';
+import DocumentList from '@/models/document-list';
 
 export default class DocumentListRepository {
-    public static async create(documentList: DocumentList): Promise<DocumentList> {
-        return new Promise((resolve, reject) => {
-            const documentListCreated = Database.instance().getCollection<DocumentList>('document-lists').insertOne(documentList);
+    public static async createOne(documentList: DocumentList): Promise<DocumentList> {
+        const documentListCreated = Database.instance().getCollection<DocumentList>('document-lists').insertOne(documentList);
 
-            if (!documentListCreated) {
-                return reject( new Error('[DocumentListRepository] Something went wrong') );
-            }
+        if (!documentListCreated) {
+            return Promise.reject( new Error('[DocumentListRepository] Something went wrong') );
+        }
 
-            return resolve( plainToClass(DocumentList, documentListCreated) );
-        });
+        return Promise.resolve( plainToClass(DocumentList, documentListCreated) );
     }
 
-    public static delete(documentListToRemove: DocumentList): Promise<DocumentList> {
-        return new Promise((resolve, reject) => {
-            Database.instance().getCollection<DocumentList>('document-lists').findAndRemove({ 'id' : { '$eq' : documentListToRemove.id } });
-            return resolve(documentListToRemove);
-        });
+    public static async delete(parameter: string | DocumentList): Promise<DocumentList> {
+        let listToRemove: DocumentList | undefined;
+
+        if (typeof parameter === 'string') {
+            listToRemove = await DocumentListRepository.read(parameter);
+        } else {
+            listToRemove = parameter;
+        }
+
+        if (!listToRemove) {
+            return Promise.reject('No list to remove found');
+        }
+
+        Database.instance().getCollection<DocumentList>('document-lists').findAndRemove({ 'id' : { '$eq' : listToRemove.id } });
+
+        return Promise.resolve(listToRemove);
     }
 
     public static find(query: any): Promise<DocumentList[]> {
@@ -37,16 +46,15 @@ export default class DocumentListRepository {
         });
     }
 
-    public static async read(id: string): Promise<DocumentList> {
-        return new Promise((resolve, reject) => {
-            const documentList = Database.instance().getCollection<DocumentList>('document-lists').findOne({ 'id' : { '$eq' : id } });
+    public static async read(id: string): Promise<DocumentList | undefined> {
+        console.log(id);
+        const documentList = Database.instance().getCollection<DocumentList>('document-lists').findOne({ 'id' : { '$eq' : id } });
 
-            if (!documentList) {
-                return resolve();
-            }
+        if (!documentList) {
+            return Promise.resolve(undefined);
+        }
 
-            return resolve( plainToClass(DocumentList, documentList) );
-        });
+        return Promise.resolve( plainToClass(DocumentList, documentList) );
     }
 
     public static readAll(): Promise<DocumentList[]> {

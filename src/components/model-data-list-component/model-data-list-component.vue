@@ -28,9 +28,9 @@
                 </li>
             </ul>
             <div class="data-list-buttons">
-                <button type="button" class="button button-small button-text button-positive" @click="onSaveClick">
+                <button type="button" class="button button-small button-text button-positive" @click="onConfirmClick">
                     <span class="iconmonstr iconmonstr-buka-save"></span>
-                    {{ $t('Save') }}
+                    {{ $t('Confirm') }}
                 </button>
                 <button type="button" class="button button-small button-text" @click="onCancelClick">
                     <span class="iconmonstr iconmonstr-buka-x-mark"></span>
@@ -45,6 +45,9 @@
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import to from 'await-to-js';
 
+    import ModelDataListComponentEventCancel from '@/components/model-data-list-component/model-data-list-component-event-cancel';
+    import ModelDataListComponentEventConfirm from '@/components/model-data-list-component/model-data-list-component-event-confirm';
+
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
 
@@ -57,7 +60,7 @@
     import LIST_STORE_MODULE_MUTATION_TYPE from '@/store-modules/list/lists-store-module-mutation-type';
 
     @Component
-    export default class ModelDataList extends Vue {
+    export default class ModelDataListComponent extends Vue {
         @Prop({required: true, type: String})
         public model: string;
 
@@ -75,14 +78,19 @@
             this.dataIdsSelected = [];
         }
 
-        public async mounted() {
+        public async beforeMount() {
             if (this.model === 'DocumentList') {
                 await this.$store.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL);
-                this.data = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_GET_ALL];
+
+                // TODO fix this hack
+                const dataTmp: Map<string, DocumentList> = this.$store.getters[LIST_STORE_MODULE_GETTER_TYPE.LIST_GET_ALL];
+                this.data = Array.from(dataTmp.values());
+
                 return;
             }
 
             if (this.model === 'Document') {
+                
                 await this.$store.dispatch(LIBRARY_STORE_MODULE_ACTION_TYPE.DOCUMENT_READ_ALL);
                 this.data = this.$store.getters[LIBRARY_STORE_MODULE_GETTER_TYPE.DOCUMENT_GET_ALL];
                 return;
@@ -90,7 +98,7 @@
         }
 
         public onCancelClick() {
-            this.$emit('cancel');
+            this.$emit(ModelDataListComponentEventCancel.id);
         }
 
         public onCheckboxClick(event: any, datum: Document | DocumentList) {
@@ -126,9 +134,8 @@
             }
         }
 
-        public onSaveClick() {
-            const dataSelected: Document[] | DocumentList[] = [];
-            this.$emit('save', this.dataSelected);
+        public onConfirmClick() {
+            this.$emit(ModelDataListComponentEventConfirm.id, new ModelDataListComponentEventConfirm(this.dataSelected));
         }
     }
 </script>

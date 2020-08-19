@@ -1,6 +1,6 @@
 <template>
     <div class="editable-textfield-component" v-bind:class="customClasses">
-        <label v-if="!hideLabel" v-bind:for="id" class="label">{{ label }}:</label>
+        <label v-if="!hideLabel" v-bind:for="id" class="label">{{ $t(label) }}:</label>
 
         <div class="textfield">
             <div v-if="isEditModeInternal" class="edit-mode">
@@ -91,6 +91,7 @@
 
         public isEditModeInternal: Boolean;
         public valueInternal: string | number;
+        public valueInternalBackup: string | number;
 
         public constructor() {
             super();

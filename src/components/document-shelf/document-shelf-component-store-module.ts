@@ -14,9 +14,10 @@ export default class DocumentShelfComponentStoreModule extends VuexModule {
     public documents: Document[] = [];
     public documentsSortOptionSelected: string = Configuration.instance().documentSorting.sortOptionDefault;;
 
+    /*
     get [DOCUMENT_SHELF_COMPONENT_STORE_MODULE_GETTER_TYPE.DOCUMENT_GET_ALL](): Document[] {
         return this.documents;
-    }
+    }*/
 
     get [DOCUMENT_SHELF_COMPONENT_STORE_MODULE_GETTER_TYPE.LIST_GET_DISPLAY_OPTION](): LIST_DISPLAY_OPTION {
         return this.documentListDisplayOption;
