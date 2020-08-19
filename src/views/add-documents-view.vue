@@ -2,12 +2,12 @@
     <div class="view" id="add-document-view-component" >
         <div class="view-content">
             <vue-auto-dropzone
-                v-bind:options="dropzoneOptions"
-                :include-styling="false"
-                :destroyDropzone="true"
-                @addedfile="onDocumentsAdded"
                 class="document-new-dropzone"
-                ref="dropzone" 
+                ref="dropzone"
+                v-bind:options="dropzoneOptions"
+                v-bind:include-styling="false"
+                v-bind:destroyDropzone="true"
+                @addedfile="onDocumentsAdded"
             />
 
             <div class="buttons">
@@ -17,7 +17,7 @@
                     v-on:click="onDocumentsSaveClick"
                 >
                     <span class="iconmonstr iconmonstr-buka-save"></span>
-                    {{ $t(`Save ${dropzoneFilesTotal} Documents`) }}
+                    {{ $tc(`Add n Documents`, dropzoneFilesTotal) }}
                 </button>
                 <button 
                     type="button"
@@ -65,7 +65,6 @@
         public constructor() {
             super();
             this.documents = [];
-            this.dropzone = this.$refs.dropzone;
             this.dropzoneFilesTotal = 0;
             this.dropzoneOptions = {
                 acceptedFiles: 'application/pdf',
@@ -89,9 +88,7 @@
         }
 
         public mounted(): void {
-            this.documents = [];
             this.dropzone = this.$refs.dropzone;
-            this.dropzoneFilesTotal = 0;
         }
 
         public onDocumentsAdded(file: DropzoneFile): void {
