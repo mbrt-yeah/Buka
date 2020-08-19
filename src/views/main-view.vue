@@ -3,7 +3,7 @@
         <topbar-component />
         <div class="main-content-wrapper">
             <sidebar-component />
-            <router-view default="library" />
+            <router-view />
         </div>
         <notifications group="app-notifications" position="bottom center" />
     </div>

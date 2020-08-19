@@ -13,9 +13,14 @@ import LIST_STORE_MODULE_MUTATION_TYPE from '@/store-modules/list/lists-store-mo
 
 @Module
 export default class ListStoreModule extends VuexModule {
+    public listFocused: DocumentList;
     public listFocusedDocuments: Document[] = [];
     public listFocusedIndex: number = -1;
-    public lists: DocumentList[] = [];
+    public lists: Map<string, DocumentList> = new Map();
+
+    get [LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET](): DocumentList {
+        return this.listFocused;
+    }
 
     get [LIST_STORE_MODULE_GETTER_TYPE.LIST_FOCUSED_GET_ALL_DOCUMENTS](): Document[] {
         return this.listFocusedDocuments;
@@ -25,42 +30,38 @@ export default class ListStoreModule extends VuexModule {
         return this.listFocusedIndex;
     }
 
-    get [LIST_STORE_MODULE_GETTER_TYPE.LIST_GET_ALL](): DocumentList[] {
+    get [LIST_STORE_MODULE_GETTER_TYPE.LIST_GET_ALL](): Map<string, DocumentList> {
         return this.lists;
     }
 
     @Mutation
-    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_ADD_ONE](documentList: DocumentList): void {
-        this.lists.push(documentList);
-    }
-
-    @Mutation
-    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_REMOVE_ONE](index: number): void {
-        if ( index < 0 || index >= this.lists.length ) {
-            return;
-        }
-
-        this.lists.splice(index, 1);
-    }
-
-    @Mutation
-    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ONE](documentListNew: DocumentList): void {
-        let i = 0;
-        const l = this.lists.length;
-
-        for (i; i < l; i++) {
-            if (this.lists[i].id !== documentListNew.id) {
-                continue;
-            }
-
-            this.lists[i] = documentListNew;
-            break;
-        }
-    }
-
-    @Mutation
     public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ALL](documentLists: DocumentList[]): void {
-        this.lists = documentLists;
+        for (const documentList of documentLists) {
+            this.lists.set(documentList.id, documentList);
+        }
+    }
+
+    @Mutation
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_MANY](documentLists: DocumentList[]): void {
+        for (const documentList of documentLists) {
+            this.lists.set(documentList.id, documentList);
+        }
+    }
+
+    @Mutation
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ONE](documentList: DocumentList): void {
+        console.log(documentList);
+        this.lists.set(documentList.id, documentList);
+    }
+
+    @Mutation
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_UNSET_ONE](listToRemove: DocumentList): void {
+        this.lists.delete(listToRemove.id);
+    }
+
+    @Mutation
+    public [LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET](listFocused: DocumentList): void {
+        this.listFocused = listFocused;
     }
 
     @Mutation
@@ -79,7 +80,7 @@ export default class ListStoreModule extends VuexModule {
             throw new Error('dcumentList to be created has no name');
         }
 
-        const [createError, createResult] = await to<DocumentList>( DocumentListRepository.create(documentList) );
+        const [createError, createResult] = await to<DocumentList>( DocumentListRepository.createOne(documentList) );
 
         if (createError) {
             throw createError;
@@ -89,20 +90,14 @@ export default class ListStoreModule extends VuexModule {
             throw new Error('createResult is undefined');
         }
 
-        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_ADD_ONE, createResult);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ONE, createResult);
 
         return createResult;
     }
 
     @Action
-    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_DELETE_ONE](index: number): Promise<DocumentList> {
-        const listToDelete = this.lists[index];
-
-        if (!listToDelete) {
-            throw new Error('No list to delete found');
-        }
-
-        const [deleteError, deleteResult] = await to<DocumentList>( DocumentListRepository.delete(listToDelete) );
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_DELETE_ONE](parameter: string | DocumentList): Promise<DocumentList> {
+        const [deleteError, deleteResult] = await to<DocumentList>( DocumentListRepository.delete(parameter) );
 
         if (deleteError) {
             throw deleteError;
@@ -112,7 +107,7 @@ export default class ListStoreModule extends VuexModule {
             throw new Error('deleteResult is undefined');
         }
 
-        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_REMOVE_ONE, index);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_UNSET_ONE, deleteResult);
 
         return deleteResult;
     }
@@ -135,26 +130,20 @@ export default class ListStoreModule extends VuexModule {
     }
 
     @Action
-    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ALL_DOCUMENTS](documentListIndex: number): Promise<Document[]> {
-        const documentList = this.lists[documentListIndex];
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_READ_ONE](listId: string): Promise<DocumentList> {
+        const [readError, readResult] = await to<DocumentList | undefined>( DocumentListRepository.read(listId) );
 
-        if (!documentList) {
-            throw new Error(`[ListViewStoreModule] No document list at index position ${documentListIndex} found`);
+        if (readError) {
+            throw readError;
         }
 
-        const [readAllError, readAllResult] = await to<Document[]>( DocumentRepository.readMany(documentList.documentIds) );
-
-        if (readAllError) {
-            throw readAllError;
+        if (!readResult) {
+            throw new Error(`No list with id ${listId} found.`);
         }
 
-        if (!readAllResult) {
-            return [];
-        }
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET, readResult);
 
-        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_DOCUMENTS, readAllResult);
-
-        return readAllResult;
+        return readResult;
     }
 
     @Action
@@ -186,8 +175,59 @@ export default class ListStoreModule extends VuexModule {
             throw new Error('updateResult is undefined');
         }
 
-        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_ALL, updateResult);
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_SET_MANY, updateResult);
 
         return updateResult;
+    }
+
+    @Action
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_FOCUSED_ADD_DOCUMENTS](documentsToAdd: Document[]): Promise<void> {
+        if (!this.listFocused) {
+            throw new Error('no list to which to add documents');
+        }
+
+        if (documentsToAdd.length === 0) {
+            return;
+        }
+
+        const documentIds: string[] = [];
+
+        for (const document of documentsToAdd) {
+            documentIds.push(document.id);
+        }
+
+        const documentIdsAdded = this.listFocused.addDocumentIds(documentIds);
+
+        if (documentIdsAdded === 0) {
+            return;
+        }
+
+        await this.context.dispatch(LIST_STORE_MODULE_ACTION_TYPE.LIST_UPDATE_ONE, this.listFocused);
+    }
+
+    @Action
+    public async [LIST_STORE_MODULE_ACTION_TYPE.LIST_FOCUSED_READ_ALL_DOCUMENTS](): Promise<Document[]> {
+        if (!this.listFocused) {
+            throw new Error('no list for which to read all documents');
+        }
+
+        if (this.listFocused.documentIds.length === 0) {
+            this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_DOCUMENTS, []);
+            return [];
+        }
+
+        const [readAllError, readAllResult] = await to<Document[]>( DocumentRepository.readMany(this.listFocused.documentIds) );
+
+        if (readAllError) {
+            throw readAllError;
+        }
+
+        if (!readAllResult) {
+            return [];
+        }
+
+        this.context.commit(LIST_STORE_MODULE_MUTATION_TYPE.LIST_FOCUSED_SET_DOCUMENTS, readAllResult);
+
+        return readAllResult;
     }
 }

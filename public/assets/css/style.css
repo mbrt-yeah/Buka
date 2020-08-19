@@ -741,8 +741,8 @@ input[type=text]:focus {
     flex-direction: column;
     margin: 0 24px 24px 0 ;
     margin: 0 1.5rem 1.5rem 0;
-    max-width: 160px;
-    max-width: 10rem;
+    width: 160px;
+    width: 10rem;
 }
 
 .document-shelf-component .document-shelf.list .document {
@@ -765,17 +765,28 @@ input[type=text]:focus {
     background-color: #3b3c6a;
 }
 
-.document-shelf-component .document-shelf.grid .document img {
+.document-shelf-component .document-shelf .document .img-wrapper {
+    height: 160px;
+    height: 10rem;
+    overflow: hidden;
+    text-align: center;
+}
+
+.document-shelf-component .document-shelf .document .img-wrapper img {
+    height: 100%;
+}
+
+.document-shelf-component .document-shelf.grid .document .img-wrapper {
     margin-bottom: 6px;
     margin-bottom: 0.375rem;
     width: 100%;
 }
 
-.document-shelf-component .document-shelf.list .document img {
+.document-shelf-component .document-shelf.list .document .img-wrapper {
     margin-right: 12px;
     margin-right: 0.75rem;
-    max-width: 160px;
-    max-width: 10rem;
+    width: 160px;
+    width: 10rem;
 }
 
 .document-shelf-component .document-shelf .document .metadata {
@@ -785,10 +796,11 @@ input[type=text]:focus {
 }
 
 .document-shelf-component .document-shelf.grid .document .metadata .title {
-    display: flex;
     font-size: smaller;
     justify-content: center;
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .document-shelf-component .document-shelf.list .document .metadata .title {
@@ -838,8 +850,8 @@ input[type=text]:focus {
     overflow-y: scroll;
     width: 320px;
     width: 20rem;
-    padding: 0 24px 24px;
-    padding: 0 1.5rem 1.5rem;
+    padding: 6px 24px 0 24px;
+    padding: 0.375rem 1.5rem 0rem 1.5rem;
 }
 
 .document-preview-component .options {

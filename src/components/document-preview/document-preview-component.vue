@@ -3,24 +3,24 @@
         <template v-if="document">
             <div class="options">
                 <div class="add-to-list-option option" v-if="!isDeleteMode && !isEditMode">
-                    <button type="button" class="button button-small button-text button-icon-right" @click="onAddToListClick">
+                    <button type="button" class="button button-small button-text button-icon-right" @click="onAddDocumentToListClick">
                         <span class="iconmonstr iconmonstr-buka-plus"></span>
                         <span class="text">{{ $t('Add to List') }}</span>
                     </button>
                 </div>
                 <div class="edit-option option" v-if="!isDeleteMode">
                     <div v-if="isEditMode" class="edit-mode-on">
-                        <button type="button" class="button button-small button-text button-positive" @click="onSaveClick">
+                        <button type="button" class="button button-small button-text button-positive" @click="onEditDocumentSaveClick">
                             <span class="iconmonstr iconmonstr-buka-save"></span>
                             {{ $t('Save') }}
                         </button>
-                        <button type="button" class="button button-small button-text" @click="onCancelClick">
+                        <button type="button" class="button button-small button-text" @click="onEditDocumentCancelClick">
                             <span class="iconmonstr iconmonstr-buka-x-mark"></span>
                             {{ $t('Cancel') }}
                         </button>
                     </div>
                     <div v-else class="edit-mode-off">
-                        <button type="button" class="button button-small button-text" @click="onEditClick">
+                        <button type="button" class="button button-small button-text" @click="onEditDocumentClick">
                             <span class="iconmonstr iconmonstr-buka-pencil"></span>
                             {{ $t('Edit') }}
                         </button>
@@ -29,17 +29,17 @@
                 <div class="delete-option option" v-if="!isEditMode">
                     <div v-if="isDeleteMode" class="delete-mode-on">
                         <span class="question">{{ $t('Are you sure?') }}</span> 
-                        <button type="button" class="button button-small button-text button-negative" @click="onDeleteYesClick">
+                        <button type="button" class="button button-small button-text button-negative" @click="onDeleteDocumentConfirmClick">
                             <span class="iconmonstr iconmonstr-buka-trash-can"></span>
                             {{ $t('Yes Delete') }}
                         </button>
-                        <button type="button" class="button button-small button-text" @click="onDeleteNoClick">
+                        <button type="button" class="button button-small button-text" @click="onDeleteDocumentCancelClick">
                             <span class="iconmonstr iconmonstr-buka-x-mark"></span>
                             {{ $t('Cancel') }}
                         </button>
                     </div>
                     <div v-else class="delete-mode-off">
-                        <button type="button" class="button button-small button-text button-negative" @click="onDeleteClick">
+                        <button type="button" class="button button-small button-text button-negative" @click="onDeleteDocumentClick">
                             <span class="iconmonstr iconmonstr-buka-trash-can"></span>
                             {{ $t('Delete') }}
                         </button>
@@ -61,11 +61,11 @@
                 </div>
             </div>
             <modal v-bind:name="'data-list-document-lists'" v-bind:classes="'buka'" v-bind:height="'auto'" v-bind:adaptive="true">
-                <model-data-list 
+                <model-data-list-component
                     v-bind:model="'DocumentList'"
                     v-bind:title="'Document Lists'"
-                    v-on:save="onAddToListSave"
-                    v-on:cancel="onAddToListCancel" 
+                    v-on:confirm="onAddDocumentToListSave"
+                    v-on:cancel="onAddDocumentToListCancel" 
                 />
             </modal>
         </template>
@@ -76,18 +76,22 @@
     import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
     import to from 'await-to-js';
 
+    import DocumentPreviewComponentEventAddToList from '@/components/document-preview/document-preview-component-event-add-to-list.ts';
+    import EditableMetadataForm from '@/components/editable-metadata-form-component.vue'
+    import ModelDataListComponent from '@/components/model-data-list-component/model-data-list-component.vue';
+    import ModelDataListComponentEventCancel from '@/components/model-data-list-component/model-data-list-component-event-cancel.ts';
+    import ModelDataListComponentEventConfirm from '@/components/model-data-list-component/model-data-list-component-event-confirm.ts';
+
     import Document from '@/models/document';
     import DocumentList from '@/models/document-list';
     import Metadata from '@/models/metadata';
 
-    import DocumentPreviewComponentEventAddToList from '@/components/document-preview/document-preview-component-event-add-to-list.ts';
-    import EditableMetadataForm from '@/components/editable-metadata-form-component.vue'
-    import ModelDataList from '@/components/model-data-list-component.vue';
+    import cloneObject from '@/utils/clone-object';
 
     @Component({
         components: {
-            ModelDataList,
-            EditableMetadataForm
+            EditableMetadataForm,
+            ModelDataListComponent
         }
     })
     export default class DocumentPreviewComponent extends Vue {
@@ -97,6 +101,8 @@
         public metadataFormSchema: any | null;
         public isDeleteMode: boolean;
         public isEditMode: boolean;
+
+        private documentBackup: Document | null;
 
         public constructor() {
             super();
@@ -111,46 +117,62 @@
             this.isEditMode = false;
         }
 
-        public onAddToListCancel() {
+        public onAddDocumentToListCancel(event: ModelDataListComponentEventCancel): void {
             this.$modal.hide('data-list-document-lists');
         }
 
-        public onAddToListClick() {
+        public onAddDocumentToListClick(): void {
             this.$modal.show('data-list-document-lists');
         }
 
-        public async onAddToListSave(documentLists: DocumentList[]): Promise<void> {
-            if (this.document) {
-                this.$emit('addToList:document', new DocumentPreviewComponentEventAddToList(this.document, documentLists));
+        public onAddDocumentToListSave(event: ModelDataListComponentEventConfirm): void {
+            this.$modal.hide('data-list-document-lists');
+
+            const documentLists = event.data as DocumentList[];
+
+            if (documentLists.length === 0 || !this.document) {
+                return;
             }
 
-            this.$modal.hide('data-list-document-lists');
+            this.$emit('addtolists:document', new DocumentPreviewComponentEventAddToList(this.document, documentLists));
         }
 
-        public onCancelClick(): void {
-            this.isEditMode = false;
-        }
+        public onEditDocumentClick(): void {
+            if (!this.document) {
+                return;
+            }
 
-        public onEditClick(): void {
+            this.documentBackup = cloneObject<Document>(this.document, Document);
             this.isEditMode = true;
         }
 
-        public async onDeleteClick(): Promise<void> {
+        public onEditDocumentCancelClick(): void {
+            if (!this.document || !this.documentBackup) {
+                return;
+            }
+
+            this.document.metadata = this.documentBackup.metadata;
+            this.documentBackup = null;
+            this.isEditMode = false;
+        }
+
+        public async onEditDocumentSaveClick(): Promise<void> {
+            this.$emit('update:document', this.document);
+            this.documentBackup = null;
+            this.isEditMode = false;
+        }
+
+        public async onDeleteDocumentClick(): Promise<void> {
             this.isDeleteMode = true;
         }
 
-        public async onDeleteYesClick(): Promise<void> {
+        public onDeleteDocumentCancelClick() {
+            this.isDeleteMode = false;
+        }
+
+        public async onDeleteDocumentConfirmClick(): Promise<void> {
             this.$emit('delete:document', this.document);
             this.isDeleteMode = false;
-        }
-
-        public onDeleteNoClick() {
-            this.isDeleteMode = false;
-        }
-
-        public async onSaveClick(): Promise<void> {
-            this.$emit('update:document', this.document);
-            this.isEditMode = false;
         }
     }
 </script>

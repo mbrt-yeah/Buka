@@ -1,0 +1,5 @@
+enum GETTER_TYPE_SHARED {
+    DOCUMENT_GET_ALL = 'documentGetAll'
+}
+
+export default LIBRARY_STORE_MODULE_GETTER_TYPE;
