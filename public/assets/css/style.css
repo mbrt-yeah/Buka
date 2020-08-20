@@ -591,27 +591,38 @@ input[type=text]:focus {
 
 
 /**
- * Searchbox Component
+ * Search Component
  */
 
-.search-box-component {
+.search-component {}
+
+.search-component .search-modal {}
+
+.search-modal .search-modal-content {
+    width: 50%;
     margin: 0 auto;
 }
 
-.search-box {
-    background: #1b1b1b url(../img/search.png) no-repeat 192px center !important;
+.search-modal-content .search-form-simple {}
+
+.search-form-simple .search-box {
+    background: #1b1b1b url(../img/search.png) no-repeat 99% center !important;
     border: 0 !important;
     color: #eeeeee;
+    font-size: xx-large;
+    height: 48px;
+    height: 3rem;
     padding: 6px 12px;
     padding: 0.375rem 0.75rem;
-    width: 192px;
-    width: 12rem;
+    width: 100%
 }
 
-.search-box:hover,
-.search-box:focus {
+.search-form-simple .search-box:hover,
+.search-form-simple .search-box:focus {
     background-color: #1e1e1e;
 }
+
+.search-modal-content .search-results-list {}
 
 
 /**
